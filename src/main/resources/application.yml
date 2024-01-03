@@ -1,0 +1,37 @@
+server:
+  #  端口号，默认8080，可修改
+  port: 8888
+  servlet:
+    #    编写路径（可不写）
+    context-path: /kgc
+
+spring:
+  redis:
+    database: 0
+    host: redis01
+    port: 6379
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:mysql:///rms?serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis-plus:
+  type-aliases-package: com.rms.backend.entity
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    root: info
+    com.rms.backend: debug
+
+secret: rms001
+time: 7
