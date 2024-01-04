@@ -1,6 +1,8 @@
 server:
   #  端口号，默认8080，可修改
   port: 8888
+  servlet:
+    context-path: /rms
 
 spring:
   redis:
