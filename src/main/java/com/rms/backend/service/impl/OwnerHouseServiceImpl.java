@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 /**
 * @author 刘恒
 * @description 针对表【owner_house】的数据库操作Service实现
-* @createDate 2024-01-09 17:04:56
+* @createDate 2024-01-11 16:40:47
 */
 @Service
 public class OwnerHouseServiceImpl extends ServiceImpl<OwnerHouseMapper, OwnerHouse>
     implements OwnerHouseService{
+
+
 
 }
 

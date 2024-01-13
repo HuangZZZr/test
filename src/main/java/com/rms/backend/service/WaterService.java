@@ -1,5 +1,8 @@
 package com.rms.backend.service;
 
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
+import com.rms.backend.entity.House;
 import com.rms.backend.entity.Water;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface WaterService extends IService<Water> {
 
+    ResponseResult getwaterData();
+
+
+    ResponseResult waterList(QueryCondition<House> queryCondition);
 }

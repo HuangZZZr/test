@@ -19,4 +19,7 @@
         payment_time,update_time,amount,
         balance
     </sql>
+    <select id="electricityData" resultType="com.rms.backend.entity.Electricity">
+        select * from electricity where 30>balance
+    </select>
 </mapper>

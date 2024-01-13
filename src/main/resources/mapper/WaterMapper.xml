@@ -19,4 +19,7 @@
         payment_time,update_time,amount,
         balance
     </sql>
+    <select id="waterData" resultType="com.rms.backend.entity.Water">
+        select * from water where 10>balance
+    </select>
 </mapper>
