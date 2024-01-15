@@ -16,4 +16,9 @@
         id,pid,title,
         content,create_time
     </sql>
+    <select id="getnoticeData">
+
+        SELECT * FROM notice order by create_time desc limit 1
+
+    </select>
 </mapper>

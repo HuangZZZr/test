@@ -1,5 +1,7 @@
 package com.rms.backend.service;
 
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Notice;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface NoticeService extends IService<Notice> {
 
+    ResponseResult noticeList(QueryCondition<Notice> queryCondition);
+
+    ResponseResult getnoticeData();
 }
