@@ -42,8 +42,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
     @Override
     public ResponseResult getnoticeData() {
 
-        baseMapper.getnoticeData();
-        return null;
+        Notice notice = baseMapper.getnoticeData();
+        return ResponseResult.success().data(notice);
     }
 }
 

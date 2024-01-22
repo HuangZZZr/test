@@ -22,7 +22,8 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
     public ResponseResult getdrivewayData() {
 
         List<Driveway>datas=baseMapper.drivewayData();
-        return null;
+
+        return ResponseResult.success().data(datas);
     }
 }
 

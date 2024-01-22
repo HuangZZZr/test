@@ -8,15 +8,21 @@ import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Electricity;
 import com.rms.backend.entity.House;
+import com.rms.backend.entity.Owner;
 import com.rms.backend.entity.Water;
+import com.rms.backend.from.EleFrom;
 import com.rms.backend.mapper.HouseMapper;
+import com.rms.backend.mapper.OwnerMapper;
 import com.rms.backend.service.ElectricityService;
 import com.rms.backend.mapper.ElectricityMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author 刘恒
@@ -31,11 +37,21 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
     @Resource
     private HouseMapper houseMapper;
 
+    @Resource
+    private OwnerMapper ownerMapper;
+
     @Override
     public ResponseResult getelectricityData() {
 
         List<Electricity>datas=baseMapper.electricityData();
-        return ResponseResult.success().data(datas);
+        List<Map> eledatas=datas.stream().map(data ->{
+            Double balance = data.getBalance();
+            HashMap<String,Double> eleHashMap = new HashMap<>();
+            String numbering = houseMapper.selectById(data.getHid()).getNumbering();
+            eleHashMap.put(numbering,balance);
+            return eleHashMap;
+        }).collect(Collectors.toList());
+        return ResponseResult.success().data(eledatas);
     }
 
     @Override
@@ -51,11 +67,19 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
         baseMapper.selectPage(elePage,new QueryWrapper<Electricity>().lambda().eq(Electricity::getHid,hid));
 
         List<Electricity> eles = elePage.getRecords();
+        List<Object> eleFroms=eles.stream().map(electricity -> {
+            EleFrom eleFrom = new EleFrom();
+            BeanUtils.copyProperties(electricity,eleFrom);
+            Integer oid = electricity.getOid();
+            Owner owner = ownerMapper.selectById(oid);
+            eleFrom.setEleName(owner.getName());
+            return eleFrom;
+        }).collect(Collectors.toList());
         long total = elePage.getTotal();
 
         //封装结果
         HashMap<String, Object> eleMap = new HashMap<>();
-        eleMap.put("pageData",eles);
+        eleMap.put("pageData",eleFroms);
         eleMap.put("total",total);
 
         return ResponseResult.success().data(eleMap);

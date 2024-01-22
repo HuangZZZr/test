@@ -18,6 +18,6 @@
         context,repair_time,statue
     </sql>
     <select id="pepairData" resultType="com.rms.backend.entity.Repair">
-        SELECT * FROM pepair order by repair_time desc limit 10
+        SELECT * FROM repair order by repair_time desc limit 10
     </select>
 </mapper>
