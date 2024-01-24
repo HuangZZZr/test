@@ -20,14 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UnitServiceImpl extends ServiceImpl<UnitMapper, Unit> implements UnitService{
 
-    @Override
-    public ResponseResult getUnitList(QueryCondition<Unit> queryCondition) {
-        Page<Unit> unitPage = new Page<>(queryCondition.getLimit(), queryCondition.getPage());
-        LambdaQueryWrapper<Unit> lambda = new QueryWrapper<Unit>().lambda();
-        lambda.eq(StringUtils.isNotEmpty(queryCondition.getQuery().getName()),Unit::getName,queryCondition.getQuery().getName())
 
-        return null;
-    }
 }
 
 

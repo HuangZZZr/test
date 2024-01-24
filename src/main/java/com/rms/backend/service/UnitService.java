@@ -12,5 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface UnitService extends IService<Unit> {
 
-    ResponseResult getUnitList(QueryCondition<Unit> queryCondition);
+
 }
