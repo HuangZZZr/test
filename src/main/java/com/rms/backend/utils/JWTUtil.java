@@ -42,7 +42,7 @@ public class JWTUtil {
     }
 
 //    解析token
-    public Map<String,Object> getClaim(String token){
+    public Map<String,Object> getClaims(String token){
         return JWT.decode(token).getClaim("userInfo").asMap();
     }
 }

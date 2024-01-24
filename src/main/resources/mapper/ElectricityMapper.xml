@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rms.backend.mapper.ElectricityMapper">
+
+    <resultMap id="BaseResultMap" type="com.rms.backend.entity.Electricity">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="hid" column="hid" jdbcType="INTEGER"/>
+            <result property="oid" column="oid" jdbcType="INTEGER"/>
+            <result property="paymentTime" column="payment_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="amount" column="amount" jdbcType="DOUBLE"/>
+            <result property="balance" column="balance" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,hid,oid,
+        payment_time,update_time,amount,
+        balance
+    </sql>
+</mapper>
