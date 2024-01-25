@@ -8,16 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
-import com.rms.backend.entity.Electricity;
-import com.rms.backend.entity.Owner;
-import com.rms.backend.entity.OwnerRole;
-import com.rms.backend.entity.Water;
+import com.rms.backend.entity.*;
 import com.rms.backend.form.OwnerForm;
-import com.rms.backend.mapper.ElectricityMapper;
-import com.rms.backend.mapper.OwnerRoleMapper;
-import com.rms.backend.mapper.WaterMapper;
+import com.rms.backend.mapper.*;
+import com.rms.backend.service.OwnerDriService;
 import com.rms.backend.service.OwnerService;
-import com.rms.backend.mapper.OwnerMapper;
 import com.rms.backend.utils.SaltUtil;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.BeanUtils;
@@ -43,6 +38,17 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
 
     @Resource
     private WaterMapper waterMapper;
+
+    @Resource
+    private ParkingFreeMapper parkingFreeMapper;
+
+    @Resource
+    private OwnerDriMapper ownerDriMapper;
+    @Resource
+    private OwnerDriService ownerDriService;
+
+    @Resource
+    private  OwnerHouseMapper ownerHouseMapper;
     @Override
     public ResponseResult ownerList(QueryCondition<Owner> queryCondition) {
         //分页查询
@@ -143,7 +149,32 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         lambda.in(OwnerRole::getOid,ids);
         ownerRoleMapper.delete(lambda);
 
-        //删除水电费和车位费
+        //删除水电费和车位
+        LambdaQueryWrapper<Electricity> lambda1 = new QueryWrapper<Electricity>().lambda();
+        lambda1.in(Electricity::getOid,ids);
+        electricityMapper.delete(lambda1);
+
+        LambdaQueryWrapper<Water> lambda2 = new QueryWrapper<Water>().lambda();
+        lambda2.in(Water::getOid,ids);
+        waterMapper.delete(lambda2);
+
+
+        LambdaQueryWrapper<OwnerDri> lambda4 = new QueryWrapper<OwnerDri>().lambda();
+        OwnerDri one = ownerDriService.getOne(lambda4);
+
+        if(ObjectUtils.isNotNull(one)){
+            lambda4.in(OwnerDri::getOid,ids);
+            ownerDriMapper.delete(lambda4);
+
+            LambdaQueryWrapper<ParkingFree> lambda3 = new QueryWrapper<ParkingFree>().lambda();
+            lambda3.in(ParkingFree::getOid,ids);
+            parkingFreeMapper.delete(lambda3);
+        }
+
+        LambdaQueryWrapper<OwnerHouse> lambda5 = new QueryWrapper<OwnerHouse>().lambda();
+        lambda5.in(OwnerHouse::getOid,ids);
+        ownerHouseMapper.delete(lambda5);
+
 
         return ResponseResult.success().message("删除成功");
     }
