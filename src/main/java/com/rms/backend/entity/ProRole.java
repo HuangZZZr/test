@@ -17,12 +17,13 @@ public class ProRole implements Serializable {
     /**
      * 物业管理员id
      */
-    @TableId
+    @TableId(value = "pid")
     private Integer pid;
 
     /**
      * 对应角色id
      */
+    @TableField(value = "rid")
     private Integer rid;
 
     @TableField(exist = false)

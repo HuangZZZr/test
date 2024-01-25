@@ -17,17 +17,19 @@ public class Role implements Serializable {
     /**
      * 主键
      */
-    @TableId
+    @TableId(value = "id")
     private Integer id;
 
     /**
      * 角色名称
      */
+    @TableField(value = "role_name")
     private String roleName;
 
     /**
      * 备注
      */
+    @TableField(value = "remark")
     private String remark;
 
     @TableField(exist = false)

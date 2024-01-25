@@ -17,12 +17,13 @@ public class OwnerRole implements Serializable {
     /**
      * 业主id
      */
-    @TableId
+    @TableId(value = "oid")
     private Integer oid;
 
     /**
      * 角色id
      */
+    @TableField(value = "rid")
     private Integer rid;
 
     @TableField(exist = false)

@@ -21,7 +21,7 @@ public class ParkingFree implements Serializable {
     /**
      * 主键
      */
-    @Excel(name = "序号",orderNum = "1")
+    @Excel(name = "序号",orderNum = "1",type = IdType.AUTO)
     @TableId(value = "id")
     private Integer id;
 

@@ -27,6 +27,13 @@ public class Owner implements Serializable {
     private String name;
 
     /**
+     * 盐
+     */
+    @TableField(value = "salt")
+    private String salt;
+
+
+    /**
      * 电话
      */
     @TableField(value = "tel")
@@ -55,9 +62,6 @@ public class Owner implements Serializable {
      */
     @TableField(value = "statue")
     private Integer statue;
-
-    @TableField(value = "salt")
-    private String salt;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

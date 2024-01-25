@@ -12,5 +12,4 @@
     <sql id="Base_Column_List">
         oid,hid
     </sql>
-
 </mapper>

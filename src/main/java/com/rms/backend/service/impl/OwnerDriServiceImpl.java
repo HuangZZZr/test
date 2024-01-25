@@ -6,14 +6,15 @@ import com.rms.backend.service.OwnerDriService;
 import com.rms.backend.mapper.OwnerDriMapper;
 import org.springframework.stereotype.Service;
 
+
 /**
-* @author YiXin
+* @author 16600
 * @description 针对表【owner_dri】的数据库操作Service实现
-* @createDate 2024-01-24 16:55:25
+* @createDate 2024-01-08 15:13:24
 */
 @Service
-public class OwnerDriServiceImpl extends ServiceImpl<OwnerDriMapper, OwnerDri>
-    implements OwnerDriService{
+public class OwnerDriServiceImpl extends ServiceImpl<OwnerDriMapper, OwnerDri> implements OwnerDriService{
+
 
 }
 

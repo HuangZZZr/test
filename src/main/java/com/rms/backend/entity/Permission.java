@@ -17,47 +17,55 @@ public class Permission implements Serializable {
     /**
      * 权限id
      */
-    @TableId
+    @TableId(value = "id")
     private Integer id;
 
     /**
-     * 菜单
+     * 组件名称
      */
+    @TableField(value = "title")
     private String title;
 
     /**
      * 父id
      */
+    @TableField(value = "pid")
     private Integer pid;
 
     /**
      * 权限字符串
      */
+    @TableField(value = "permission")
     private String permission;
 
     /**
      * 模块
      */
+    @TableField(value = "model")
     private String model;
 
     /**
      * 组件路径
      */
+    @TableField(value = "path")
     private String path;
 
     /**
      * 组件名称
      */
+    @TableField(value = "component")
     private String component;
 
     /**
      * 图标
      */
+    @TableField(value = "icon")
     private String icon;
 
     /**
      * 是否是菜单  0 目录  1菜单   2 按钮
      */
+    @TableField(value = "is_menu")
     private Integer isMenu;
 
     @TableField(exist = false)

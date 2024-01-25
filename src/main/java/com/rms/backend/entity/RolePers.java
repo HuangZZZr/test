@@ -17,12 +17,13 @@ public class RolePers implements Serializable {
     /**
      * 
      */
-    @TableId
+    @TableId(value = "rid")
     private Integer rid;
 
     /**
      * 
      */
+    @TableField(value = "pid")
     private Integer pid;
 
     @TableField(exist = false)

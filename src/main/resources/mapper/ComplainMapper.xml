@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rms.backend.mapper.ComplainMapper">
+
+    <resultMap id="BaseResultMap" type="com.rms.backend.entity.Complain">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="oid" column="oid" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="complainTime" column="complain_time" jdbcType="TIMESTAMP"/>
+            <result property="statue" column="statue" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,oid,content,
+        complain_time,statue
+    </sql>
+</mapper>

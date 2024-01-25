@@ -9,6 +9,7 @@
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="tel" column="tel" jdbcType="VARCHAR"/>
             <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="salt" column="salt" jdbcType="VARCHAR"/>
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="statue" column="statue" jdbcType="INTEGER"/>
@@ -16,7 +17,7 @@
 
     <sql id="Base_Column_List">
         id,name,tel,
-        sex,username,password,
+        sex,salt,username,password,
         statue
     </sql>
 </mapper>
