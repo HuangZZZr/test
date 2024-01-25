@@ -13,4 +13,7 @@
     <sql id="Base_Column_List">
         id,car_kind,statue
     </sql>
+    <select id="drivewayData" resultType="com.rms.backend.entity.Driveway">
+        select * from driveway where statue=0
+    </select>
 </mapper>

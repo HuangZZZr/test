@@ -1,24 +1,31 @@
 package com.rms.backend.commons;
 
+/**
+ * @Projectname: rms-backend
+ * @Filename: ResultCode
+ * @Author: LH
+ * @Data:2024/1/10 18:55
+ */
 public enum ResultCode {
     SUCCESS(0,"操作成功"),
     FAIL(110,"操作失败"),
     NO_AUTHENTICATED(401,"请认证后访问"),
-    ERROR(500,"异常发生，请及时排查错误")
-    ;
-    private String message;
+    ERROR(500,"服务器异常,请刷新重试!!!");
+
     private Integer code;
+    private String message;
 
-    ResultCode(Integer code, String message) {
-        this.message = message;
+    ResultCode(Integer code,String message){
         this.code = code;
+        this.message = message;
     }
 
-    public String getMessage() {
-        return this.message;
+    public String getMessage(){
+        return  this.message;
     }
 
-    public Integer getCode() {
-        return this.code;
+    public Integer getCode(){
+        return  this.code;
     }
+
 }

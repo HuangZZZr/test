@@ -17,4 +17,6 @@ public interface DrivewayService extends IService<Driveway> {
     ResponseResult delBatchDriveway(Integer[] ids);
 
     ResponseResult saveOrUpdateDavewat(Driveway driveway);
+
+    ResponseResult getdrivewayData();
 }

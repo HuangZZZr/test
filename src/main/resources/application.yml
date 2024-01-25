@@ -6,14 +6,15 @@ server:
 
 spring:
   redis:
+    password: 123456
     database: 0
-    host: redis01
+    host: 192.168.246.30
     port: 6379
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
+    password: 111111
     url: jdbc:mysql:///rms?serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
   jackson:
     default-property-inclusion: non_null

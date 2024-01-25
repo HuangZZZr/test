@@ -77,9 +77,9 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
 
     @Override
     public ResponseResult saveOrUpdateDavewat(Driveway driveway) {
-        if (ObjectUtils.isEmpty(driveway.getId())){
+        if (ObjectUtils.isEmpty(driveway.getId())) {
             baseMapper.insert(driveway);
-        }else if (driveway.getStatue()==0){
+        } else if (driveway.getStatue() == 0) {
             //      改变车位状态为未用，需对停车费表进行删除操作
             ParkingFree parkingFree = parkingFreeMapper.selectOne(new QueryWrapper<ParkingFree>().lambda().eq(ParkingFree::getDid, driveway.getId()));
             if (ObjectUtils.isNotEmpty(parkingFree)) {
@@ -91,10 +91,18 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
                 }
             }
             baseMapper.updateById(driveway);
-        }else {
+        } else {
             baseMapper.updateById(driveway);
         }
         return ResponseResult.success();
+    }
+
+    @Override
+    public ResponseResult getdrivewayData() {
+
+        List<Driveway>datas=baseMapper.drivewayData();
+
+        return ResponseResult.success().data(datas);
     }
 }
 
