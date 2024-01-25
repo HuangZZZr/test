@@ -107,7 +107,7 @@ public class CustomerRealm extends AuthorizingRealm {
 
         //从payload里获取uid
 
-        Map<String, Object> claim = jwtUtil.getClaim(tk);
+        Map<String, Object> claim = jwtUtil.getClaims(tk);
         String uid = (String) claim.get("uid");
 
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(uid, tk, this.getName());

@@ -10,26 +10,17 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 
-/**
- * @Projectname: rms-backend
- * @Filename: MyBatisPlusConfig
- * @Author: LH
- * @Data:2024/1/12 20:12
- */
-
 @Configuration
-public class MyBatisPlusConfig implements MetaObjectHandler {
-
+public class MybatisPlusConfig implements MetaObjectHandler {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor(){
         MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
         mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
-        return  mybatisPlusInterceptor;
+        return mybatisPlusInterceptor;
     }
 
-
     @Override
-    public void insertFill(MetaObject metaObject) {
+    public void insertFill(MetaObject metaObject){
         this.setFieldValByName("createTime",new Date(),metaObject);
         this.setFieldValByName("updateTime",new Date(),metaObject);
     }

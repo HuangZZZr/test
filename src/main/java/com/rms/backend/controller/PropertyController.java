@@ -127,7 +127,7 @@ public class PropertyController {
     @GetMapping("getInfo")
     public ResponseResult getInfo(HttpServletRequest request){
         String token = request.getHeader("token");
-        Map<String, Object> claim = jwtUtil.getClaim(token);
+        Map<String, Object> claim = jwtUtil.getClaims(token);
         String name = (String) claim.get("name");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
         LambdaQueryWrapper<Owner> queryWrapper = new QueryWrapper<Owner>().lambda();

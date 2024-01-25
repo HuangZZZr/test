@@ -154,7 +154,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
     public ResponseResult editInfo(ProPertyForm proPertyForm, HttpServletRequest request) {
         //先从token获取name，查看是物业还是业主
         String token = request.getHeader("token");
-        Map<String, Object> claim = jwtUtil.getClaim(token);
+        Map<String, Object> claim = jwtUtil.getClaims(token);
         String name = (String) claim.get("name");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
         lambda.eq(Property::getName,name);
@@ -192,7 +192,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
     @Override
     public ResponseResult editPassword(PasswordForm passwordForm, HttpServletRequest request) {
         String token = request.getHeader("token");
-        Map<String, Object> claim = jwtUtil.getClaim(token);
+        Map<String, Object> claim = jwtUtil.getClaims(token);
         String name = (String) claim.get("name");
         Integer id = (Integer) claim.get("id");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();

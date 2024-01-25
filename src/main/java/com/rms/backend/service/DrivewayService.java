@@ -19,6 +19,4 @@ public interface DrivewayService extends IService<Driveway> {
     ResponseResult saveOrUpdateDavewat(Driveway driveway);
 
     ResponseResult getdrivewayData();
-
-    ResponseResult getDriveWayList(QueryCondition<Driveway> queryCondition);
 }
