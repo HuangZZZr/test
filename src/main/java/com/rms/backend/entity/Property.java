@@ -9,11 +9,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName owner
+ * @TableName property
  */
-@TableName(value ="owner")
+@TableName(value ="property")
 @Data
-public class Owner implements Serializable {
+public class Property implements Serializable {
     /**
      * 主键
      */
@@ -21,42 +21,45 @@ public class Owner implements Serializable {
     private Integer id;
 
     /**
-     * 业主姓名
+     * 登录账户
      */
-    @TableField(value = "name")
+    private String account;
+
+    /**
+     * 登录密码
+     */
+    private String password;
+
+    /**
+     * 姓名
+     */
     private String name;
 
     /**
      * 电话
      */
-    @TableField(value = "tel")
     private String tel;
 
     /**
      * 性别'0女 1男'
      */
-    @TableField(value = "sex")
-    private String sex;
+    private Integer sex;
 
     /**
-     * 登录用户名
+     * 身份证
      */
-    @TableField(value = "username")
-    private String username;
+    private String personId;
 
     /**
-     * 密码
+     * 账户"0启用" “1禁用”
      */
-    @TableField(value = "password")
-    private String password;
+    private Integer state;
 
     /**
-     * 账户"0启用"“1禁用”
+     * 是否在职
      */
-    @TableField(value = "statue")
-    private Integer statue;
+    private String serving;
 
-    @TableField(value = "salt")
     private String salt;
 
     @TableField(exist = false)
