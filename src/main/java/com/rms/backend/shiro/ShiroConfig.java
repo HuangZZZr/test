@@ -17,8 +17,10 @@ import java.util.LinkedHashMap;
 @Configuration
 public class ShiroConfig {
     @Bean
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultWebSecurityManager defaultWebSecurityManager){
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(DefaultWebSecurityManager defaultWebSecurityManager){
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
+        shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
+
         LinkedHashMap<String, Filter> filters = new LinkedHashMap<>();
         filters.put("kgc",new JWTFilter());
 //        添加自定义的filter到shiro中
@@ -34,14 +36,14 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
     @Bean
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(Realm realm){
+    public DefaultWebSecurityManager defaultWebSecurityManager(Realm realm){
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager(realm);
         defaultWebSecurityManager.setRealm(realm);
         return defaultWebSecurityManager;
 
     }
     @Bean
-    public Realm getRealm(){
+    public Realm realm(){
         CustomerRealm customerRealm = new CustomerRealm();
         return customerRealm;
     }

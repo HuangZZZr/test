@@ -24,7 +24,7 @@ public class CaptchaController {
     StringRedisTemplate stringRedisTemplate;
 
     //验证码
-    @GetMapping("getCaptcha")
+    @GetMapping
     public ResponseResult getCaptcha(){
       //生成验证码
         LineCaptcha lineCaptcha = new LineCaptcha(110, 50, 4, 3);

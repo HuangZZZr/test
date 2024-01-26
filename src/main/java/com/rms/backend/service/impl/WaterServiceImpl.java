@@ -45,10 +45,11 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water>
         List<Water> datas=baseMapper.waterData();
         List<Map>waterdatas=datas.stream().map(data->{
 
-            HashMap<String, Double> waterHashMap = new HashMap<>();
+            HashMap<String, Object> waterHashMap = new HashMap<>();
             Double balance = data.getBalance();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
-            waterHashMap.put(numbering,balance);
+            waterHashMap.put("numbering",numbering);
+            waterHashMap.put("balance",balance);
             return waterHashMap;
         }).collect(Collectors.toList());
         return ResponseResult.success().data(waterdatas);
@@ -61,17 +62,18 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water>
         Page<Water> waterPage = new Page<>(queryCondition.getPage(), queryCondition.getLimit());
         if (StringUtils.isEmpty(numbering)){
             baseMapper.selectPage(waterPage,null);
+        }else {
+            House house = houseMapper.selectOne(new QueryWrapper<House>().lambda().eq(House::getNumbering, numbering));
+            Integer hid = house.getId();
+            baseMapper.selectPage(waterPage,new QueryWrapper<Water>().lambda().eq(Water::getHid,hid));
         }
-        Integer hid = houseMapper.selectOne(new QueryWrapper<House>().lambda().eq(House::getNumbering, numbering)).getId();
-        baseMapper.selectPage(waterPage,new QueryWrapper<Water>().lambda().eq(Water::getHid,hid));
-
         List<Water> waters = waterPage.getRecords();
         List<Object> waterFroms=waters.stream().map(water -> {
             WaterFrom waterFrom = new WaterFrom();
             BeanUtils.copyProperties(water,waterFrom);
-            Integer oid = water.getOid();
-            Owner owner = ownerMapper.selectById(oid);
-            waterFrom.setOwnerName(owner.getName());
+            Integer hid = water.getHid();
+            House house = houseMapper.selectById(hid);
+            waterFrom.setNumbering(house.getNumbering());
             return waterFrom;
         }).collect(Collectors.toList());
 

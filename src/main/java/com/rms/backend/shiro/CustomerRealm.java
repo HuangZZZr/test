@@ -56,6 +56,10 @@ public class CustomerRealm extends AuthorizingRealm {
 
     @Resource
     JWTUtil jwtUtil;
+    @Override
+    public boolean supports(AuthenticationToken token) {
+        return token instanceof JwtToken;
+    }
     //权限控制
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
@@ -108,7 +112,7 @@ public class CustomerRealm extends AuthorizingRealm {
         //从payload里获取uid
 
         Map<String, Object> claim = jwtUtil.getClaims(tk);
-        String uid = (String) claim.get("uid");
+        Object uid = claim.get("id");
 
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(uid, tk, this.getName());
 

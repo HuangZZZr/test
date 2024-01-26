@@ -46,9 +46,10 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
         List<Electricity>datas=baseMapper.electricityData();
         List<Map> eledatas=datas.stream().map(data ->{
             Double balance = data.getBalance();
-            HashMap<String,Double> eleHashMap = new HashMap<>();
+            HashMap<String,Object> eleHashMap = new HashMap<>();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
-            eleHashMap.put(numbering,balance);
+            eleHashMap.put("numbering",numbering);
+            eleHashMap.put("balance",balance);
             return eleHashMap;
         }).collect(Collectors.toList());
         return ResponseResult.success().data(eledatas);
@@ -62,17 +63,17 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
         Page<Electricity> elePage = new Page<>(queryCondition.getPage(), queryCondition.getLimit());
         if (StringUtils.isEmpty(numbering)){
             baseMapper.selectPage(elePage,null);
-        }
+        }else {
         Integer hid = houseMapper.selectOne(new QueryWrapper<House>().lambda().eq(House::getNumbering, numbering)).getId();
         baseMapper.selectPage(elePage,new QueryWrapper<Electricity>().lambda().eq(Electricity::getHid,hid));
-
+        }
         List<Electricity> eles = elePage.getRecords();
         List<Object> eleFroms=eles.stream().map(electricity -> {
             EleFrom eleFrom = new EleFrom();
             BeanUtils.copyProperties(electricity,eleFrom);
-            Integer oid = electricity.getOid();
-            Owner owner = ownerMapper.selectById(oid);
-            eleFrom.setEleName(owner.getName());
+            Integer hid = electricity.getHid();
+            House house = houseMapper.selectById(hid);
+            eleFrom.setNumbering(house.getNumbering());
             return eleFrom;
         }).collect(Collectors.toList());
         long total = elePage.getTotal();

@@ -18,7 +18,7 @@ import java.util.List;
 */
 public interface PropertyService extends IService<Property> {
 
-    ResponseResult login(LoginForm loginForm);
+    ResponseResult login(LoginForm loginForm,HttpServletRequest request);
 
     ResponseResult batchDelete(List<Integer> asList);
 

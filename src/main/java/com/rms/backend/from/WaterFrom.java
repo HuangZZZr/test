@@ -12,5 +12,5 @@ import lombok.Data;
 @Data
 public class WaterFrom extends Water {
 
-    private String ownerName;
+    private String numbering;
 }

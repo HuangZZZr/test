@@ -1,5 +1,6 @@
 package com.rms.backend.service.impl;
 
+import cn.hutool.crypto.digest.MD5;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
@@ -15,6 +16,7 @@ import com.rms.backend.form.ProPertyForm;
 import com.rms.backend.mapper.*;
 import com.rms.backend.service.OwnerService;
 import com.rms.backend.service.PropertyService;
+import com.rms.backend.utils.IpUtil;
 import com.rms.backend.utils.JWTUtil;
 import com.rms.backend.utils.SaltUtil;
 import com.rms.backend.vo.PropertyVo;
@@ -56,7 +58,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
      @Resource
     StringRedisTemplate stringRedisTemplate;
     @Override
-    public ResponseResult login(LoginForm loginForm) {
+    public ResponseResult login(LoginForm loginForm,HttpServletRequest request) {
         //先判断验证码是否过期
         String s = stringRedisTemplate.opsForValue().get(loginForm.getImgUuid());
         if(StringUtils.isEmpty(s)){
@@ -71,12 +73,14 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         //比较用户名，分别比较两个表
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
         LambdaQueryWrapper<Owner> lam = new QueryWrapper<Owner>().lambda();
-        lambda.eq(Property::getName,loginForm.getName());
-        lam.eq(Owner::getName,loginForm.getName());
+        lambda.eq(Property::getAccount,loginForm.getName());
+        lam.eq(Owner::getUsername,loginForm.getName());
         //查询业主表
         Owner owner = ownerMapper.selectOne(lam);
         Property property = baseMapper.selectOne(lambda);
+
         //判断管理员表，如果有用户名则判断密码
+        HashMap<String, Object> data = new HashMap<>();
         if(ObjectUtils.isNotNull(property)){
             //判断密码是否正确,数据库的密码进行了加密处理，需要将用户输入的密码进行加密
             String password = new Md5Hash(loginForm.getPassword(), property.getSalt(), 1024).toHex();
@@ -85,9 +89,14 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
             }
             //颁发令牌
             HashMap<String, Object> payload = new HashMap<>();
-            payload.put("name",property.getName());
+            payload.put("account",property.getAccount());
             payload.put("id",property.getId());
-           token=jwtUtil.creteToken(payload);
+            token=jwtUtil.creteToken(payload);
+            String ss = MD5.create().digestHex(token);
+            String ip = IpUtil.getIp(request);
+            stringRedisTemplate.opsForValue().set(ss,ip);
+            data.put("account",property.getAccount());
+            data.put("token",token);
         }//如果管理员表没有用户名，则判断业主表是否有用户名
         else if(ObjectUtils.isNotNull(owner)){
             //如果不为空，判断密码是否正确
@@ -97,17 +106,21 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
             }
             //颁发令牌
             HashMap<String, Object> ownPayload = new HashMap<>();
-            ownPayload.put("name",owner.getName());
+            ownPayload.put("account",owner.getUsername());
             ownPayload.put("id",owner.getId());
             //将payload封装进token
             token=jwtUtil.creteToken(ownPayload);
+            String ss = MD5.create().digestHex(token);
+            String ip = IpUtil.getIp(request);
+            stringRedisTemplate.opsForValue().set(ss,ip);
+            data.put("account",owner.getUsername());
+            data.put("token",token);
         }//如果都没有，则抛出没有账户异常
         else {
             throw new AccountException();
         }
-        return ResponseResult.success().data(token);
+        return ResponseResult.success().data(data);
     }
-
 
     @Override
     public ResponseResult batchDelete(List<Integer> asList) {
@@ -128,8 +141,9 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         lambda.eq(StringUtils.isNotEmpty(queryCondition.getQuery().getAccount()),Property::getAccount,queryCondition.getQuery().getAccount())
                 .eq(ObjectUtils.isNotNull(queryCondition.getQuery().getState()),Property::getState,queryCondition.getQuery().getState())
                 .eq(ObjectUtils.isNotNull(queryCondition.getQuery().getServing()),Property::getServing,queryCondition.getQuery().getServing());
-        baseMapper.selectList(page, lambda);
+        baseMapper.selectPage(page, lambda);
         List<Property> records = page.getRecords();
+        System.out.println(records);
         //遍历集合
         List<PropertyVo> collect = records.stream().map(property -> {
             PropertyVo propertyVo = new PropertyVo();
@@ -145,6 +159,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         }).collect(Collectors.toList());
         long total = page.getTotal();
         HashMap<String, Object> map = new HashMap<>();
+        System.out.println(collect);
         map.put("pageData",collect);
         map.put("total",total);
         return ResponseResult.success().data(map);

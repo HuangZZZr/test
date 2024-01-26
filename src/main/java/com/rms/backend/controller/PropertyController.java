@@ -52,8 +52,8 @@ public class PropertyController {
     JWTUtil jwtUtil;
     //登录
     @PostMapping("login")
-    public ResponseResult login(@RequestBody LoginForm loginForm){
-        return  propertyService.login(loginForm);
+    public ResponseResult login(@RequestBody LoginForm loginForm,HttpServletRequest request){
+        return  propertyService.login(loginForm,request);
     }
 
     //列表展示

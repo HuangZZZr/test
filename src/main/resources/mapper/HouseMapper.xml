@@ -17,6 +17,6 @@
         area,statue
     </sql>
     <select id="houseData" resultType="java.util.Map">
-        select uid,count(id) from house where statue=1 group by uid
+        select uid as `name`,count(id) as `value` from house where statue=1 group by uid
     </select>
 </mapper>
