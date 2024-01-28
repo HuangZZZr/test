@@ -3,7 +3,7 @@ package com.rms.backend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.OwnerRole;
 import com.rms.backend.entity.RolePers;
 import com.rms.backend.service.RolePersService;

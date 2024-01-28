@@ -43,7 +43,7 @@ public class Owner implements Serializable {
      * 性别'0女 1男'
      */
     @TableField(value = "sex")
-    private String sex;
+    private Integer sex;
 
     /**
      * 登录用户名

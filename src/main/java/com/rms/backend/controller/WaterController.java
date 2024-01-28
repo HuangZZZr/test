@@ -4,6 +4,8 @@ import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.House;
@@ -49,13 +51,12 @@ public class WaterController {
 
 
     //批量导出
-    @PostMapping("waterExport")
+    @GetMapping("waterExport")
     public void waterExport(HttpServletResponse response) throws IOException {
 
         List<Water> list = waterService.list();
 
         ExportParams exportParams = new ExportParams("房屋水费信息", "水费表");
-
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Water.class, list);
 
         ServletOutputStream outputStream = response.getOutputStream();
@@ -67,10 +68,23 @@ public class WaterController {
 
 
     //修改水费
-    @PostMapping("waterUpData")
-    public ResponseResult waterUpData(Water water){
+    @PutMapping("waterUpData")
+    @Logs(model = "水费",operation = Operation.UPDATE)
+    public ResponseResult waterUpData(@RequestBody Water water){
+        System.out.println("water = " + water);
+        Double amount = water.getAmount();
+        Double balance = water.getBalance();
+        water.setBalance(amount+balance);
 
         waterService.updateById(water);
         return ResponseResult.success();
+    }
+
+
+    //更具id进行查询信息
+    @GetMapping("waterID/{id}")
+    public ResponseResult waterID(@PathVariable Integer id){
+        Water waterbyId = waterService.getById(id);
+        return ResponseResult.success().data(waterbyId);
     }
 }

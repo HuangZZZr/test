@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rms.backend.common.QueryCondition;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.*;
 import com.rms.backend.form.LoginForm;
 import com.rms.backend.form.PasswordForm;
@@ -51,6 +51,10 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
      RoleMapper roleMapper;
 
      @Resource
+     private RolePersMapper rolePersMapper;
+     @Resource
+     private PermissionMapper permissionMapper;
+     @Resource
     OwnerRoleMapper ownerRoleMapper;
      @Resource
      JWTUtil jwtUtil;
@@ -82,6 +86,9 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         //判断管理员表，如果有用户名则判断密码
         HashMap<String, Object> data = new HashMap<>();
         if(ObjectUtils.isNotNull(property)){
+            if (property.getState()==1){
+                return ResponseResult.fail().message("账户已被禁用");
+            }
             //判断密码是否正确,数据库的密码进行了加密处理，需要将用户输入的密码进行加密
             String password = new Md5Hash(loginForm.getPassword(), property.getSalt(), 1024).toHex();
             if(!StringUtils.equals(property.getPassword(),password)){
@@ -99,9 +106,12 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
             data.put("token",token);
         }//如果管理员表没有用户名，则判断业主表是否有用户名
         else if(ObjectUtils.isNotNull(owner)){
+            if (owner.getStatue()==1){
+                return ResponseResult.fail().message("账户已被禁用");
+            }
             //如果不为空，判断密码是否正确
-            String password=new Md5Hash(loginForm.getPassword(),property.getSalt(),1024).toHex();
-            if(!StringUtils.equals(property.getPassword(),password)){
+            String password=new Md5Hash(loginForm.getPassword(),owner.getSalt(),1024).toHex();
+            if(!StringUtils.equals(owner.getPassword(),password)){
                 throw  new IncorrectCredentialsException();
             }
             //颁发令牌
@@ -123,12 +133,12 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
     }
 
     @Override
-    public ResponseResult batchDelete(List<Integer> asList) {
+    public ResponseResult batchDelete(Integer id) {
         //首先根据id删除property表格的内容
         //然后根据id删除pro_role 表格的内容
         LambdaQueryWrapper<ProRole> lambda = new QueryWrapper<ProRole>().lambda();
-           baseMapper.deleteBatchIds(asList);
-           lambda.in(ProRole::getPid,asList);
+           baseMapper.deleteById(id);
+           lambda.in(ProRole::getPid,id);
            proRoleMapper.delete(lambda);
         return ResponseResult.success().message("删除成功");
     }
@@ -143,24 +153,9 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
                 .eq(ObjectUtils.isNotNull(queryCondition.getQuery().getServing()),Property::getServing,queryCondition.getQuery().getServing());
         baseMapper.selectPage(page, lambda);
         List<Property> records = page.getRecords();
-        System.out.println(records);
-        //遍历集合
-        List<PropertyVo> collect = records.stream().map(property -> {
-            PropertyVo propertyVo = new PropertyVo();
-            //复制属性
-            BeanUtils.copyProperties(property, propertyVo);
-            LambdaQueryWrapper<ProRole> queryWrapper = new QueryWrapper<ProRole>().lambda();
-            queryWrapper.eq(ProRole::getPid, property.getId());
-            List<ProRole> proRoles = proRoleMapper.selectList(queryWrapper);
-            List<Integer> rid = proRoles.stream().map(proRole -> proRole.getRid()).collect(Collectors.toList());
-            List<String> roles = roleMapper.selectBatchIds(rid).stream().map(role -> role.getRoleName()).collect(Collectors.toList());
-            propertyVo.setRoleNames(roles);
-            return propertyVo;
-        }).collect(Collectors.toList());
         long total = page.getTotal();
         HashMap<String, Object> map = new HashMap<>();
-        System.out.println(collect);
-        map.put("pageData",collect);
+        map.put("pageData",records);
         map.put("total",total);
         return ResponseResult.success().data(map);
     }
@@ -170,36 +165,21 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         //先从token获取name，查看是物业还是业主
         String token = request.getHeader("token");
         Map<String, Object> claim = jwtUtil.getClaims(token);
-        String name = (String) claim.get("name");
+        //获取登录账户，property使用的是account，owner使用username
+        String name = (String) claim.get("account");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
-        lambda.eq(Property::getName,name);
+        lambda.eq(Property::getAccount,name);
         Property property = baseMapper.selectOne(lambda);
         if(ObjectUtils.isNotNull(property)){
             Property pro = new Property();
             BeanUtils.copyProperties(proPertyForm,pro);
+            System.out.println(pro.getSex());
             baseMapper.updateById(pro);
-            //先删除关联表
-            LambdaQueryWrapper<ProRole> queryWrapper = new QueryWrapper<ProRole>().lambda();
-            queryWrapper.eq(ProRole::getPid,proPertyForm.getId());
-            proRoleMapper.delete(queryWrapper);
-            //循环添加
-            proPertyForm.getRoleIds().forEach(rid->{
-                ProRole proRole = new ProRole();
-                proRole.setPid(proPertyForm.getId());
-                proRole.setRid(rid);
-                proRoleMapper.insert(proRole);
-            });
         }else {
             Owner owner = new Owner();
             BeanUtils.copyProperties(proPertyForm,owner);
-            LambdaQueryWrapper<OwnerRole> queryWrapper = new QueryWrapper<OwnerRole>().lambda();
-            queryWrapper.eq(OwnerRole::getOid,owner.getId());
-            ownerRoleMapper.delete(queryWrapper);
-            proPertyForm.getRoleIds().forEach(rid->{
-                OwnerRole ownerRole = new OwnerRole();
-                ownerRole.setOid(owner.getId());
-                ownerRole.setRid(rid);
-            });
+            System.out.println(owner.getSex());
+            ownerMapper.updateById(owner);
         }
         return ResponseResult.success().message("修改成功");
     }
@@ -211,7 +191,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
         String name = (String) claim.get("name");
         Integer id = (Integer) claim.get("id");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
-        lambda.eq(Property::getName,name);
+        lambda.eq(Property::getAccount,name);
         Property property = baseMapper.selectOne(lambda);
         if(ObjectUtils.isNotNull(property)){
             // 1. 判定原始密码是否正确  明文
@@ -247,6 +227,38 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
             ownerMapper.updateById(owner);
         }
         return ResponseResult.success().message("密码更新成功");
+    }
+
+    @Override
+    public ResponseResult getPermissions(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        Map<String, Object> claims = jwtUtil.getClaims(token);
+        String account = (String) claims.get("account");
+
+//        根据账号去俩张表查询
+        Property property = baseMapper.selectOne(new QueryWrapper<Property>().lambda().eq(Property::getAccount, account));
+        Owner owner = ownerMapper.selectOne(new QueryWrapper<Owner>().lambda().eq(Owner::getUsername, account));
+
+        List<Permission> permissions = null;
+        if (ObjectUtils.isNotEmpty(property)){
+            List<Integer> roleIds = proRoleMapper.selectList(new QueryWrapper<ProRole>().lambda().eq(ProRole::getPid, property.getId()))
+                    .stream().map(proRole -> proRole.getRid()).collect(Collectors.toList());
+            List<Integer> pIds = rolePersMapper.selectList(new QueryWrapper<RolePers>().lambda().in(RolePers::getRid, roleIds))
+                    .stream().map(rolePers -> rolePers.getPid()).collect(Collectors.toList());
+            permissions = permissionMapper.selectList(new QueryWrapper<Permission>().lambda().in(Permission::getId, pIds))
+                    .stream().filter(permission -> permission.getIsMenu() != 2)
+                    .collect(Collectors.toList());
+        }else if (ObjectUtils.isNotEmpty(owner)){
+            List<Integer> roleIds = ownerRoleMapper.selectList(new QueryWrapper<OwnerRole>().lambda().eq(OwnerRole::getOid, owner.getId()))
+                    .stream().map(proRole -> proRole.getRid()).collect(Collectors.toList());
+            List<Integer> pIds = rolePersMapper.selectList(new QueryWrapper<RolePers>().lambda().in(RolePers::getRid, roleIds))
+                    .stream().map(rolePers -> rolePers.getPid()).collect(Collectors.toList());
+            permissions = permissionMapper.selectList(new QueryWrapper<Permission>().lambda().in(Permission::getId, pIds))
+                    .stream().filter(permission -> permission.getIsMenu() != 2)
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseResult.success().data(permissions);
     }
 }
 

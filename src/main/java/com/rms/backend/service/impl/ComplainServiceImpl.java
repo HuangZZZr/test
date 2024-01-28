@@ -24,7 +24,7 @@ public class ComplainServiceImpl extends ServiceImpl<ComplainMapper, Complain> i
 
     @Override
     public ResponseResult getComplainList(QueryCondition<Complain> queryCondition) {
-        Page<Complain> complainPage = new Page<>(queryCondition.getLimit(), queryCondition.getPage());
+        Page<Complain> complainPage = new Page<>( queryCondition.getPage(),queryCondition.getLimit());
         LambdaQueryWrapper<Complain> lambda = new QueryWrapper<Complain>().lambda();
         lambda.eq(ObjectUtils.isNotNull(queryCondition.getQuery().getStatue()),Complain::getStatue,queryCondition.getQuery().getStatue())
                 .eq(ObjectUtils.isNotNull(queryCondition.getQuery().getOid()),Complain::getOid,queryCondition.getQuery().getOid())

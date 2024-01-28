@@ -2,7 +2,7 @@ package com.rms.backend.shiro;
 
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.ResponseResult;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;

@@ -9,6 +9,7 @@ import lombok.Data;
  **/
 @Data
 public class LoginForm {
+    //登录账号
     private  String name;
     private  String password;
     private  String imgUuid;

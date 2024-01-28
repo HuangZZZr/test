@@ -86,14 +86,16 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House>
 
             //根据houseID查询屋主姓名
             Integer houseId = house.getId();
-            LambdaQueryWrapper<OwnerHouse> queryWrapper = new QueryWrapper<OwnerHouse>().lambda();
-            queryWrapper.eq(OwnerHouse::getHid,houseId);
-            OwnerHouse ownerHouse = ownerHouseMapper.selectOne(queryWrapper);
+                LambdaQueryWrapper<OwnerHouse> queryWrapper = new QueryWrapper<OwnerHouse>().lambda();
+                queryWrapper.eq(OwnerHouse::getHid,houseId);
+                OwnerHouse ownerHouse = ownerHouseMapper.selectOne(queryWrapper);
+            if (ObjectUtils.isNotEmpty(ownerHouse)){
                 Integer oid = ownerHouse.getOid();
                 String name = ownerMapper.selectById(oid).getName();
                 houseVo.setHouseName(name);
-
-
+            }else {
+                houseVo.setHouseName(null);
+            }
 
             return houseVo;
         }).collect(Collectors.toList());

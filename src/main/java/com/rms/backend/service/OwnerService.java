@@ -5,6 +5,7 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Owner;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rms.backend.form.OwnerForm;
+import com.rms.backend.vo.OwnerVO;
 
 import java.util.List;
 
@@ -17,9 +18,7 @@ public interface OwnerService extends IService<Owner> {
 
     ResponseResult ownerList(QueryCondition<Owner> queryCondition);
 
-    ResponseResult saveOwner(OwnerForm ownerForm);
+    ResponseResult saveOwner(OwnerVO ownerVO);
 
-    ResponseResult editOwner(OwnerForm ownerForm);
-
-    ResponseResult batchRemoveByIds(List<Integer> ids);
+    ResponseResult removeById(Integer id);
 }

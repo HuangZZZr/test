@@ -1,6 +1,6 @@
 package com.rms.backend.service;
 
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.RolePers;
 import com.baomidou.mybatisplus.extension.service.IService;
 

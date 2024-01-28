@@ -18,14 +18,8 @@ public class Notice implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
-    /**
-     * 物业管理员id
-     */
-    @TableField(value = "pid")
-    private Integer pid;
 
     /**
      * 标题

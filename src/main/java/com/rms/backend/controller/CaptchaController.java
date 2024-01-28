@@ -2,7 +2,7 @@ package com.rms.backend.controller;
 
 import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.util.IdUtil;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.ResponseResult;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

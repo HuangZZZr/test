@@ -17,7 +17,7 @@ public class Permission implements Serializable {
     /**
      * 权限id
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**

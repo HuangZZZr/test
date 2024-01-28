@@ -5,6 +5,8 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Driveway;
@@ -20,6 +22,7 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,29 +37,32 @@ public class ParkingFeeController {
 
     @Resource
     private OwnerDriService ownerDriService;
-//    分页查询数据
+
+    //    分页查询数据
     @PutMapping("parkingList")
-    public ResponseResult parkingFeeList(@RequestBody QueryCondition<ParkingFree> queryCondition){
+    public ResponseResult parkingFeeList(@RequestBody QueryCondition<ParkingFree> queryCondition) {
         return parkingFreeService.parkingFeeList(queryCondition);
     }
 
-//    根据id获取停车信息
+    //    根据id获取停车信息
     @GetMapping("{pid}")
-    public ResponseResult getParkingFeeById(@PathVariable Integer pid){
+    public ResponseResult getParkingFeeById(@PathVariable Integer pid) {
         ParkingFree parkingFree = parkingFreeService.getById(pid);
         return ResponseResult.success().data(parkingFree);
     }
 
-//    批量删除
+    //    批量删除
     @DeleteMapping
-    public ResponseResult delParkingFees(@RequestBody Integer[] pIds){
+    @Logs(model = "停车费",operation = Operation.DELETE)
+    public ResponseResult delParkingFees(@RequestBody Integer[] pIds) {
         return parkingFreeService.delParkingFees(pIds);
     }
 
-//    添加或修改停车费表
+    //    添加或修改停车费表
     @PostMapping("sOrU")
-    public ResponseResult saveOrUpdate(@RequestBody ParkingFree parkingFree){
-        if (ObjectUtils.isEmpty(parkingFree.getId())){
+    @Logs(model = "停车费",operation = Operation.ADD)
+    public ResponseResult saveOrUpdate(@RequestBody ParkingFree parkingFree) {
+        if (ObjectUtils.isEmpty(parkingFree.getId())) {
             //      如果是添加操作，对车位表车位状态进行修改1(已被使用)
             Driveway driveway = drivewayService.getById(parkingFree.getDid());
             driveway.setStatue(1);
@@ -66,14 +72,18 @@ public class ParkingFeeController {
             ownerDri.setDid(driveway.getId());
             ownerDri.setOid(parkingFree.getOid());
             ownerDriService.save(ownerDri);
+            parkingFree.setBalance(parkingFree.getPayMoney());
+        }else {
+            parkingFree.setBalance(parkingFree.getPayMoney() + parkingFree.getBalance());
+            parkingFree.setUpdateTime(new Date());
         }
         parkingFreeService.saveOrUpdate(parkingFree);
         return ResponseResult.success();
     }
 
-//    月份更替扣钱
+    //    月份更替扣钱
     @PostMapping("updateAll")
-    public ResponseResult updateAll(){
+    public ResponseResult updateAll() {
         List<ParkingFree> parkingFrees = parkingFreeService.list();
         List<ParkingFree> collect = parkingFrees.stream().map(parkingFree -> {
             parkingFree.setBalance(parkingFree.getBalance() - 100);
@@ -83,7 +93,7 @@ public class ParkingFeeController {
         return ResponseResult.success();
     }
 
-//    批量导出
+    //    批量导出
     @GetMapping("batchExport")
     public void batchExport(Integer oid, Integer did, HttpServletResponse response) throws IOException {
         LambdaQueryWrapper<ParkingFree> lambda = new QueryWrapper<ParkingFree>().lambda();

@@ -1,7 +1,7 @@
 package com.rms.backend.service;
 
-import com.rms.backend.common.QueryCondition;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.swagger.models.auth.In;
@@ -15,7 +15,7 @@ import java.util.List;
 */
 public interface RoleService extends IService<Role> {
 
-    ResponseResult delete(Integer[] id);
+    ResponseResult delete(Integer id);
 
     ResponseResult getPermissionsById(Integer id);
 

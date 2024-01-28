@@ -63,7 +63,7 @@ public class LogAspect {
 
         String token = request.getHeader("token");
         Map<String, Object> claims = jwtUtil.getClaims(token);
-        String name = (String) claims.get("name");
+        String name = (String) claims.get("account");
 
         //封装数据，将数据写进日志表
         LogInfo logInfo = new LogInfo();

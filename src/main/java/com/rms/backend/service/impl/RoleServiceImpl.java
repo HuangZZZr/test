@@ -3,9 +3,11 @@ package com.rms.backend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.rms.backend.common.QueryCondition;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Permission;
 import com.rms.backend.entity.ProRole;
 import com.rms.backend.entity.Role;
@@ -20,7 +22,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +45,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     @Resource
     PermissionMapper permissionMapper;
     @Override
-    public ResponseResult delete(Integer[] id) {
+    public ResponseResult delete(Integer id) {
         //先根据id查看pro-role表
         LambdaQueryWrapper<ProRole> queryWrapper = new QueryWrapper<ProRole>().lambda();
         queryWrapper.eq(ProRole::getPid,id);
@@ -73,8 +77,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
 
     @Override
     public ResponseResult getRoleList(QueryCondition<Role> queryCondition) {
-
-        return null;
+        Page<Role> rolePage = new Page<>(queryCondition.getPage(), queryCondition.getLimit());
+        LambdaQueryWrapper<Role> lambda = new QueryWrapper<Role>().lambda();
+        lambda.eq(StringUtils.isNotEmpty(queryCondition.getQuery().getRoleName()),Role::getRoleName,queryCondition.getQuery().getRoleName());
+        baseMapper.selectPage(rolePage,lambda);
+        List<Role> records = rolePage.getRecords();
+        long total = rolePage.getTotal();
+        Map<String, Object> map = new HashMap<>();
+        map.put("pageData",records);
+        map.put("total",total);
+        return ResponseResult.success().data(map);
     }
 }
 

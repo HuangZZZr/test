@@ -1,7 +1,7 @@
 package com.rms.backend.service;
 
-import com.rms.backend.common.QueryCondition;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Property;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.rms.backend.form.LoginForm;
@@ -20,7 +20,7 @@ public interface PropertyService extends IService<Property> {
 
     ResponseResult login(LoginForm loginForm,HttpServletRequest request);
 
-    ResponseResult batchDelete(List<Integer> asList);
+    ResponseResult batchDelete(Integer id);
 
     ResponseResult getList(QueryCondition<Property> queryCondition);
 
@@ -28,4 +28,6 @@ public interface PropertyService extends IService<Property> {
     ResponseResult editInfo(ProPertyForm proPertyForm, HttpServletRequest request);
 
     ResponseResult editPassword(PasswordForm passwordForm, HttpServletRequest request);
+
+    ResponseResult getPermissions(HttpServletRequest request);
 }

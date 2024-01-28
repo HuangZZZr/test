@@ -1,6 +1,8 @@
 package com.rms.backend.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Driveway;
@@ -32,6 +34,7 @@ public class DrivewayController {
 
     //    添加或保存车位信息
     @PostMapping("saveOrUpdate")
+    @Logs(model = "车位",operation = Operation.ADD)
     public ResponseResult saveOrUpdate(@RequestBody Driveway driveway){
         if (ObjectUtils.isEmpty(driveway.getId())){
             //     初始车位添加强制为未使用
@@ -42,6 +45,7 @@ public class DrivewayController {
 
     //    批量删除
     @DeleteMapping
+    @Logs(model = "车位",operation = Operation.DELETE)
     public ResponseResult delBatch(@RequestBody Integer[] ids){
         return drivewayService.delBatchDriveway(ids);
     }

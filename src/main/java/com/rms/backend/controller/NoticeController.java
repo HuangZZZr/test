@@ -1,5 +1,7 @@
 package com.rms.backend.controller;
 
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Notice;
@@ -27,7 +29,7 @@ public class NoticeController {
     private NoticeMapper noticeMapper;
 
     //分页查询
-    @PostMapping("noticeList")
+    @PutMapping("noticeList")
     public ResponseResult noticeList(@RequestBody QueryCondition<Notice> queryCondition){
         return noticeService.noticeList(queryCondition);
 
@@ -36,14 +38,16 @@ public class NoticeController {
 
     //新增
     @PostMapping("noticeAdd")
-    public ResponseResult noticeAdd(Notice notice){
+    @Logs(model = "公告",operation = Operation.ADD)
+    public ResponseResult noticeAdd(@RequestBody Notice notice){
         noticeService.save(notice);
         return ResponseResult.success();
     }
 
     //删除
-    @DeleteMapping("noticeDel")
-    public ResponseResult noticeDle(Integer id){
+    @DeleteMapping("{id}")
+    @Logs(model = "公告",operation = Operation.DELETE)
+    public ResponseResult noticeDle(@PathVariable Integer id){
 
         noticeMapper.deleteById(id);
         return ResponseResult.success();

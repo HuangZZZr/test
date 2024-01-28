@@ -18,7 +18,7 @@ public class Repair implements Serializable {
     /**
      * 主键
      */
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -49,7 +49,7 @@ public class Repair implements Serializable {
      * 维修状态
      */
     @TableField(value = "statue")
-    private String statue;
+    private Integer statue;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

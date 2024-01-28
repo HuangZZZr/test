@@ -2,6 +2,10 @@ package com.rms.backend.controller;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Electricity;
@@ -10,10 +14,7 @@ import com.rms.backend.entity.Water;
 import com.rms.backend.service.ElectricityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -44,10 +45,12 @@ public class ElectricityController {
 
 
     //批量导出
-    @PostMapping("eleExport")
+    @GetMapping("eleExport")
     public void waterExport(HttpServletResponse response) throws IOException {
 
-        List<Electricity> list = electricityService.list();
+        LambdaQueryWrapper<Electricity> lambda = new QueryWrapper<Electricity>().lambda();
+
+        List<Electricity> list = electricityService.list(lambda);
 
         ExportParams exportParams = new ExportParams("房屋电费信息", "电费表");
 
@@ -61,11 +64,23 @@ public class ElectricityController {
     }
 
     //修改电费
-    @PostMapping("eleUpData")
-    private ResponseResult eleUpData(Electricity electricity){
+    @PutMapping("eleUpData")
+    @Logs(model = "电费",operation = Operation.UPDATE)
+    private ResponseResult eleUpData(@RequestBody Electricity electricity){
+        Double amount = electricity.getAmount();
+        Double balance = electricity.getBalance();
+        electricity.setBalance(amount+balance);
         electricityService.saveOrUpdate(electricity);
         return ResponseResult.success();
 
+    }
+
+    //更具ID查看
+    @GetMapping ("eleID/{id}")
+    public ResponseResult eleID(@PathVariable Integer id){
+        Electricity electricitybyId = electricityService.getById(id);
+
+        return ResponseResult.success().data(electricitybyId);
     }
 }
 

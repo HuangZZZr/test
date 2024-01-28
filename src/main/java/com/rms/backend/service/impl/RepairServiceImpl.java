@@ -26,7 +26,7 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
     @Override
     public ResponseResult getRepairList(QueryCondition<Repair> queryCondition) {
 
-        Page<Repair> repairPage = new Page<>(queryCondition.getLimit(), queryCondition.getPage());
+        Page<Repair> repairPage = new Page<>( queryCondition.getPage(),queryCondition.getLimit());
         LambdaQueryWrapper<Repair> lambda = new QueryWrapper<Repair>().lambda();
         lambda.eq(ObjectUtils.isNotNull(queryCondition.getQuery().getOid()), Repair::getOid, queryCondition.getQuery().getOid())
                 .eq(ObjectUtils.isNotNull(queryCondition.getQuery().getStatue()), Repair::getStatue, queryCondition.getQuery().getStatue())

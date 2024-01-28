@@ -5,16 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-@ApiModel("ResponseResult")
 public class ResponseResult {
-    @ApiModelProperty(value = "提示信息",example = "操作成功")
     private String message;
-    @ApiModelProperty(value = "响应状态码",example = "0")
     private Integer code;
-    @ApiModelProperty(value = "响应的页面数据",example = "{username:tom,password:123456}")
     private Object data;
 
-    //操作成功
     public static ResponseResult success(){
         ResponseResult responseResult = new ResponseResult();
         responseResult.setCode(ResultCode.SUCCESS.getCode());
@@ -28,6 +23,7 @@ public class ResponseResult {
         responseResult.setMessage(ResultCode.FAIL.getMessage());
         return responseResult;
     }
+
     public static ResponseResult error(){
         ResponseResult responseResult = new ResponseResult();
         responseResult.setCode(ResultCode.ERROR.getCode());
@@ -39,14 +35,12 @@ public class ResponseResult {
         this.message = message;
         return this;
     }
-
-    public ResponseResult  data(Object data){
-        this.data = data;
-        return this;
-    }
-
     public ResponseResult code(Integer code){
         this.code = code;
+        return this;
+    }
+    public ResponseResult data(Object data){
+        this.data = data;
         return this;
     }
 }

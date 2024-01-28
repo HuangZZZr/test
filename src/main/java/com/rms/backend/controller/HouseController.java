@@ -6,16 +6,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.House;
 import com.rms.backend.service.HouseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -47,8 +46,8 @@ public class HouseController {
     }
 
     //查看信息
-    @PostMapping("view")
-    public ResponseResult viewHouse(@RequestBody Integer id){
+    @GetMapping("/view/{id}")
+    public ResponseResult viewHouse(@PathVariable Integer id){
         return houseService.veiwHouse(id);
     }
 
@@ -58,6 +57,7 @@ public class HouseController {
 
     //批量导入
     @PostMapping("houseImport")
+    @Logs(model = "房屋",operation = Operation.ADD)
     public ResponseResult houseImport(MultipartFile file){
         return houseService.houseImport(file);
     }

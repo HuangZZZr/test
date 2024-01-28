@@ -3,7 +3,7 @@ package com.rms.backend.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Permission;
 import com.rms.backend.entity.RolePers;
 import com.rms.backend.service.PermissionService;
@@ -20,7 +20,7 @@ import java.util.List;
  * @date 2024年01月08日 17:27
  **/
 @RestController
-@RequestMapping("permission")
+@RequestMapping("permissions")
 public class PermissionController {
     @Resource
     PermissionService permissionService;
@@ -38,9 +38,9 @@ public class PermissionController {
 
 
     //新增
-    @PostMapping("insert")
+    @PostMapping("souPer")
     public ResponseResult addPermission(@RequestBody Permission permission){
-        permissionService.save(permission);
+        permissionService.saveOrUpdate(permission);
         return ResponseResult.success().message("新增成功");
     }
 
@@ -53,7 +53,7 @@ public class PermissionController {
         return ResponseResult.success().data(list);
     }
 
-    @DeleteMapping("pid")
+    @DeleteMapping("{pid}")
     public ResponseResult deletePermission(@PathVariable Integer pid){
         //传来的虽然是主键id，但主键id与子权限的pid对象，通过id=pid查询是否有子权限
         LambdaQueryWrapper<Permission> lambda = new QueryWrapper<Permission>().lambda();

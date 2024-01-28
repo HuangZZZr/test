@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -69,22 +70,18 @@ public class CustomerRealm extends AuthorizingRealm {
         lambda.eq(ProRole::getPid,id);
         List<ProRole> proRoles = proRoleMapper.selectList(lambda);
 
-        //遍历集合，查询perId
-        List<RolePers> list = proRoles.stream().map(proRole -> {
-            LambdaQueryWrapper<RolePers> wrapper = new QueryWrapper<RolePers>().lambda();
-            wrapper.eq(RolePers::getRid, proRole.getRid());
-            RolePers rolePers = rolePersMapper.selectOne(wrapper);
-            return rolePers;
-        }).collect(Collectors.toList());
+        List<Integer> rids = proRoles.stream().map(proRole -> proRole.getRid()).collect(Collectors.toList());
 
-        //遍历list，获取每个perId对应的per对象
-        List<Permission> permissions = list.stream().map(p -> {
-            Permission permission = permissionMapper.selectById(p.getPid());
-            return permission;
-        }).collect(Collectors.toList());
-        List<String> c = permissions.stream().map(permission -> permission.getPermission()).collect(Collectors.toList());
+        //        根据用户角色rid查询权限pid
+        Set<Integer> pIds = rolePersMapper.selectList(new QueryWrapper<RolePers>().lambda().in(RolePers::getRid, rids))
+                .stream().map(rp -> rp.getPid()).collect(Collectors.toSet());
+//        根据pid查询permission权限字符串->选择isMenu==2的按钮权限
+        List<String> permissions = permissionMapper.selectList(new QueryWrapper<Permission>().lambda().in(Permission::getId, pIds))
+                .stream().filter(p -> p.getIsMenu() == 2)
+                .map(p -> p.getPermission()).collect(Collectors.toList());
+
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        simpleAuthorizationInfo.addStringPermissions(c);
+        simpleAuthorizationInfo.addStringPermissions(permissions);
         return simpleAuthorizationInfo;
     }
     //token验证

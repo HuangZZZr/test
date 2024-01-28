@@ -14,11 +14,14 @@ import com.rms.backend.mapper.*;
 import com.rms.backend.service.OwnerDriService;
 import com.rms.backend.service.OwnerService;
 import com.rms.backend.utils.SaltUtil;
+import com.rms.backend.vo.OwnerVO;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +31,7 @@ import java.util.List;
 * @createDate 2024-01-15 13:48:37
 */
 @Service
+@Transactional
 public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements OwnerService{
 
     @Resource
@@ -41,12 +45,16 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
 
     @Resource
     private ParkingFreeMapper parkingFreeMapper;
-
+    @Resource
+    private DrivewayMapper drivewayMapper;
+    @Resource
+    private PropertyMapper propertyMapper;
     @Resource
     private OwnerDriMapper ownerDriMapper;
     @Resource
     private OwnerDriService ownerDriService;
-
+    @Resource
+    private HouseMapper houseMapper;
     @Resource
     private  OwnerHouseMapper ownerHouseMapper;
     @Override
@@ -71,111 +79,119 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
     }
 
     @Override
-    public ResponseResult saveOwner(OwnerForm ownerForm) {
+    public ResponseResult saveOwner(OwnerVO ownerVO) {
         Owner owner = new Owner();
-        BeanUtils.copyProperties(ownerForm,owner);
+        BeanUtils.copyProperties(ownerVO,owner);
 
-        String name = owner.getName();
+        String account = owner.getUsername();
         LambdaQueryWrapper<Owner> lambda = new QueryWrapper<Owner>().lambda();
-        lambda.eq(Owner::getName,name);
+        lambda.eq(Owner::getUsername,account);
         Owner owner1 = baseMapper.selectOne(lambda);
-        if(ObjectUtils.isNotNull(owner1)){
-            return ResponseResult.fail().message("已存在该业主");
+
+        LambdaQueryWrapper<Property> lambda1 = new QueryWrapper<Property>().lambda();
+        lambda1.eq(Property::getAccount,account);
+        Property property = propertyMapper.selectOne(lambda1);
+
+        if(ObjectUtils.isNotNull(owner1)||ObjectUtils.isNotNull(property)){
+            return ResponseResult.fail().message("已存在该账户");
         }
         String salt = SaltUtil.createSalt(4);
         Md5Hash md5Hash = new Md5Hash("666666", salt, 1024);
         String hex = md5Hash.toHex();
         owner.setSalt(salt);
         owner.setPassword(hex);
+        owner.setStatue(0);
+        baseMapper.insert(owner);
+
+//        添加房屋关联
+        OwnerHouse ownerHouse = new OwnerHouse();
+        ownerHouse.setHid(ownerVO.getHid());
+        ownerHouse.setOid(owner.getId());
+        ownerHouseMapper.insert(ownerHouse);
+
+//        改变入住房屋状态
+        House house = houseMapper.selectById(ownerVO.getHid());
+        house.setStatue(1);
+        houseMapper.updateById(house);
 
         //设置水费表的余额和缴费金额为0
         Water water = new Water();
         water.setOid(owner.getId());
+        water.setHid(ownerVO.getHid());
+        water.setPaymentTime(new Date());
+        water.setUpdateTime(new Date());
         water.setAmount(0.00);
         water.setBalance(0.00);
+        waterMapper.insert(water);
 
         //设置电费表的余额和缴费金额为0
         Electricity electricity = new Electricity();
         electricity.setOid(owner.getId());
+        electricity.setHid(ownerVO.getHid());
+        electricity.setPaymentTime(new Date());
+        electricity.setUpdateTime(new Date());
         electricity.setBalance(0.00);
         electricity.setAmount(0.00);
-
-        baseMapper.insert(owner);
-
-
+        electricityMapper.insert(electricity);
 
         //修改业主角色表
-        Integer id = owner.getId();
-        List<Integer> rids = ownerForm.getRids();
-        rids.forEach(rid ->{
-            OwnerRole ownerRole = new OwnerRole();
-            ownerRole.setOid(id);
-            ownerRole.setRid(rid);
-            ownerRoleMapper.insert(ownerRole);
-        });
+        OwnerRole ownerRole = new OwnerRole();
+        ownerRole.setOid(owner.getId());
+        ownerRole.setRid(3);
+        ownerRoleMapper.insert(ownerRole);
+
         return ResponseResult.success().message("添加成功");
     }
 
     @Override
-    public ResponseResult editOwner(OwnerForm ownerForm) {
-        //先修改owner表的数据
-        Owner owner = new Owner();
-        BeanUtils.copyProperties(ownerForm,owner);
-        baseMapper.updateById(owner);
-
-        //删除当前用户的角色，再将新的角色信息插入角色表中
-        LambdaQueryWrapper<OwnerRole> lambda = new QueryWrapper<OwnerRole>().lambda();
-        lambda.eq(OwnerRole::getOid,owner.getId());
-        ownerRoleMapper.delete(lambda);
-
-        List<Integer> rids = ownerForm.getRids();
-        rids.forEach(rid->{
-            OwnerRole ownerRole = new OwnerRole();
-           ownerRole.setRid(rid);
-           ownerRole.setOid(owner.getId());
-           ownerRoleMapper.insert(ownerRole);
-        });
-        return ResponseResult.success().message("修改成功");
-    }
-
-    @Override
-    public ResponseResult batchRemoveByIds(List<Integer> ids) {
-
-        //删除业主表的信息
-        baseMapper.deleteBatchIds(ids);
+    public ResponseResult removeById(Integer id) {
 
         //删除业主角色关联表的信息
         LambdaQueryWrapper<OwnerRole> lambda = new QueryWrapper<OwnerRole>().lambda();
-        lambda.in(OwnerRole::getOid,ids);
+        lambda.eq(OwnerRole::getOid,id);
         ownerRoleMapper.delete(lambda);
 
-        //删除水电费和车位
+//        修改房屋状态
+        Integer hid = ownerHouseMapper.selectOne(new QueryWrapper<OwnerHouse>().lambda().eq(OwnerHouse::getOid, id)).getHid();
+        House house = houseMapper.selectById(hid);
+        house.setStatue(0);
+        houseMapper.updateById(house);
+
+        //删除水电费
         LambdaQueryWrapper<Electricity> lambda1 = new QueryWrapper<Electricity>().lambda();
-        lambda1.in(Electricity::getOid,ids);
+        lambda1.eq(Electricity::getOid,id);
         electricityMapper.delete(lambda1);
 
         LambdaQueryWrapper<Water> lambda2 = new QueryWrapper<Water>().lambda();
-        lambda2.in(Water::getOid,ids);
+        lambda2.eq(Water::getOid,id);
         waterMapper.delete(lambda2);
 
-
+//      车位关联表判断（有删除，无结束）
         LambdaQueryWrapper<OwnerDri> lambda4 = new QueryWrapper<OwnerDri>().lambda();
         OwnerDri one = ownerDriService.getOne(lambda4);
 
-        if(ObjectUtils.isNotNull(one)){
-            lambda4.in(OwnerDri::getOid,ids);
+        if(ObjectUtils.isNotEmpty(one)){
+            lambda4.eq(OwnerDri::getOid,id);
             ownerDriMapper.delete(lambda4);
 
+//      车位状态修改
+            Driveway driveway = drivewayMapper.selectById(one.getDid());
+            driveway.setStatue(0);
+            drivewayMapper.updateById(driveway);
+
+//            停车费表删除
             LambdaQueryWrapper<ParkingFree> lambda3 = new QueryWrapper<ParkingFree>().lambda();
-            lambda3.in(ParkingFree::getOid,ids);
+            lambda3.eq(ParkingFree::getOid,id);
             parkingFreeMapper.delete(lambda3);
         }
 
+//        业主房屋关联删除
         LambdaQueryWrapper<OwnerHouse> lambda5 = new QueryWrapper<OwnerHouse>().lambda();
-        lambda5.in(OwnerHouse::getOid,ids);
+        lambda5.in(OwnerHouse::getOid,id);
         ownerHouseMapper.delete(lambda5);
 
-
+//        删除业主信息
+        baseMapper.deleteById(id);
         return ResponseResult.success().message("删除成功");
     }
 

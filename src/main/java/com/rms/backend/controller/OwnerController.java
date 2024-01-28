@@ -1,14 +1,21 @@
 package com.rms.backend.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.rms.backend.commons.Logs;
+import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Owner;
+import com.rms.backend.entity.OwnerHouse;
 import com.rms.backend.form.OwnerForm;
+import com.rms.backend.service.OwnerHouseService;
 import com.rms.backend.service.OwnerService;
 import com.rms.backend.utils.SaltUtil;
+import com.rms.backend.vo.OwnerVO;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,7 +27,8 @@ public class OwnerController {
 
     @Resource
     private OwnerService ownerService;
-
+    @Resource
+    private OwnerHouseService ownerHouseService;
     //1、查询业主信息
     @PostMapping("/list")
     public ResponseResult ownerList(@RequestBody QueryCondition<Owner> queryCondition){
@@ -30,20 +38,26 @@ public class OwnerController {
 
     //2、新增业主信息 password=666666  初始化房屋水电费
 
-    @PostMapping
-    public ResponseResult addOwner(@RequestBody OwnerForm ownerForm){
-        return ownerService.saveOwner(ownerForm);
+    @PostMapping("save")
+    @Logs(model = "业主",operation = Operation.ADD)
+    public ResponseResult addOwner(@RequestBody OwnerVO ownerVO){
+        return ownerService.saveOwner(ownerVO);
     }
     //3、修改业主信息
-    @PutMapping("editOwner")
-    public ResponseResult editOwner(@RequestBody OwnerForm ownerForm){
-        return ownerService.editOwner(ownerForm);
+    @PutMapping("update")
+    @Logs(model = "业主",operation = Operation.UPDATE)
+    public ResponseResult editOwner(@RequestBody OwnerVO ownerVO){
+        Owner owner = new Owner();
+        BeanUtils.copyProperties(ownerVO,owner);
+        ownerService.updateById(owner);
+        return ResponseResult.success().message("修改成功");
     }
     //4、删除业主信息 结算水电费 删除关联房屋水电费表、车位费表的信息
 
-    @DeleteMapping
-    public ResponseResult delete(@RequestBody Integer[] oids){
-        return ownerService.batchRemoveByIds(Arrays.asList(oids));
+    @DeleteMapping("{id}")
+    @Logs(model = "业主",operation = Operation.DELETE)
+    public ResponseResult delete(@PathVariable Integer id){
+        return ownerService.removeById(id);
     }
 
     //重置密码
@@ -67,5 +81,22 @@ public class OwnerController {
     public ResponseResult editState(@RequestBody Owner owner) {
         ownerService.updateById(owner);
         return ResponseResult.success().message("状态更新成功");
+    }
+
+    //根据id查询
+    @GetMapping("/{id}")
+    public ResponseResult getOwnerById(@PathVariable Integer id){
+        Owner owner = ownerService.getById(id);
+        OwnerVO ownerVO = new OwnerVO();
+        BeanUtils.copyProperties(owner,ownerVO);
+        Integer hid = ownerHouseService.getOne(new QueryWrapper<OwnerHouse>().lambda().eq(OwnerHouse::getOid, id)).getHid();
+        ownerVO.setHid(hid);
+        return ResponseResult.success().data(ownerVO);
+    }
+    //根据username查询
+    @GetMapping("/getByUsername/{username}")
+    public ResponseResult getByUsername(@PathVariable String username){
+        Owner owner = ownerService.getOne(new QueryWrapper<Owner>().lambda().eq(Owner::getUsername,username));
+        return ResponseResult.success().data(owner);
     }
 }

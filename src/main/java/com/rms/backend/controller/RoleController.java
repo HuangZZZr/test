@@ -2,8 +2,8 @@ package com.rms.backend.controller;
 
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
-import com.rms.backend.common.QueryCondition;
-import com.rms.backend.common.ResponseResult;
+import com.rms.backend.commons.QueryCondition;
+import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Role;
 import com.rms.backend.entity.RolePers;
 import com.rms.backend.service.RolePersService;
@@ -21,7 +21,7 @@ import java.util.Map;
  * @date 2024年01月08日 17:27
  **/
 @RestController
-@RequestMapping("role")
+@RequestMapping("roles")
 public class RoleController {
     @Resource
     RoleService roleService;
@@ -36,7 +36,7 @@ public class RoleController {
     @PostMapping("saveOrUpdateRoleInfo")
     public ResponseResult saveOrUpdateRoleInfo(@RequestBody Role role){
         //角色不能重复
-        Role role1 = roleService.getById(role.getId());
+        Role role1 = roleService.getById(role.getRoleName());
         if (ObjectUtils.isNotNull(role1)){
             return ResponseResult.fail().message("角色名重复");
         }
@@ -46,7 +46,8 @@ public class RoleController {
 
     //删除
     @DeleteMapping("{id}")
-    public ResponseResult delete(@PathVariable Integer[] id){
+    public ResponseResult delete(@PathVariable Integer id){
+        System.out.println("rid = " + id);
         return  roleService.delete(id);
     }
 
