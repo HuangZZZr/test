@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HouseNoException.class)
     public ResponseResult otherExceptionHandler(HouseNoException e){
         e.printStackTrace();
-        return ResponseResult.error().message("学号有重复");
+        return ResponseResult.error().message("房屋编号有重复");
     }
 
     @ExceptionHandler(Exception.class)

@@ -163,7 +163,7 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House>
                 LambdaQueryWrapper<House> houseLambda = new QueryWrapper<House>().lambda();
                 houseLambda.eq(House::getNumbering,numbering);
                 House house1 = baseMapper.selectOne(houseLambda);
-                if (ObjectUtils.isNull(house1)){
+                if (ObjectUtils.isNotEmpty(house1)){
                     throw new HouseNoException();
                 }
                 baseMapper.insert(house);

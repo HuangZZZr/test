@@ -66,7 +66,7 @@ public class HouseController {
 
 
     //批量导出
-    @PostMapping("houseExport")
+    @GetMapping("houseExport")
     public void houseExport(HttpServletResponse response,Integer uid,String numbering,Integer statue) throws IOException {
 
 
