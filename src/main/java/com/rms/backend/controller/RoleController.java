@@ -1,6 +1,7 @@
 package com.rms.backend.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
@@ -36,12 +37,12 @@ public class RoleController {
     @PostMapping("saveOrUpdateRoleInfo")
     public ResponseResult saveOrUpdateRoleInfo(@RequestBody Role role){
         //角色不能重复
-        Role role1 = roleService.getById(role.getRoleName());
+        Role role1 = roleService.getOne(new QueryWrapper<Role>().lambda().eq(Role::getRoleName,role.getRoleName()));
         if (ObjectUtils.isNotNull(role1)){
             return ResponseResult.fail().message("角色名重复");
         }
         roleService.saveOrUpdate(role);
-        return ResponseResult.success().message("添加成功");
+        return ResponseResult.success().message("操作成功");
     }
 
     //删除

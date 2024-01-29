@@ -66,7 +66,7 @@ public class ElectricityController {
     //修改电费
     @PutMapping("eleUpData")
     @Logs(model = "电费",operation = Operation.UPDATE)
-    private ResponseResult eleUpData(@RequestBody Electricity electricity){
+    public ResponseResult eleUpData(@RequestBody Electricity electricity){
         Double amount = electricity.getAmount();
         Double balance = electricity.getBalance();
         electricity.setBalance(amount+balance);

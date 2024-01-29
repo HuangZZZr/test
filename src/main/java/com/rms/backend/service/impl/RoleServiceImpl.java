@@ -48,12 +48,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
     public ResponseResult delete(Integer id) {
         //先根据id查看pro-role表
         LambdaQueryWrapper<ProRole> queryWrapper = new QueryWrapper<ProRole>().lambda();
-        queryWrapper.eq(ProRole::getPid,id);
-        ProRole proRole = proRoleMapper.selectOne(queryWrapper);
-        if(ObjectUtils.isNotNull(proRole)){
+        queryWrapper.eq(ProRole::getRid,id);
+        List<ProRole> proRoles = proRoleMapper.selectList(queryWrapper);
+        if(proRoles.size()>0){
             return ResponseResult.fail().message("角色有人使用，无法删除");
         }
         baseMapper.deleteById(id);
+        rolePersMapper.delete(new QueryWrapper<RolePers>().lambda().eq(RolePers::getRid,id));
         return ResponseResult.success().message("删除成功");
     }
 

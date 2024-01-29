@@ -134,7 +134,7 @@ public class PropertyController {
     }
 
     //重置密码
-    @PutMapping("resetPwd/{id}")
+    @GetMapping("resetPwd/{id}")
     public ResponseResult resetPwd(@PathVariable Integer id){
         Property property = new Property();
         property.setId(id);

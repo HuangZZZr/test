@@ -88,6 +88,7 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
                     return ResponseResult.fail().message(parkingFree.getDid() + "车位租用尚且欠费，请结清余额");
                 } else {
                     parkingFreeMapper.deleteById(parkingFree);
+                    ownerDriMapper.delete(new QueryWrapper<OwnerDri>().lambda().eq(OwnerDri::getDid,driveway.getId()));
                 }
             }
             baseMapper.updateById(driveway);
