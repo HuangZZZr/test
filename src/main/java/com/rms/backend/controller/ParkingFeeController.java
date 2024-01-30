@@ -16,6 +16,7 @@ import com.rms.backend.service.DrivewayService;
 import com.rms.backend.service.OwnerDriService;
 import com.rms.backend.service.ParkingFreeService;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,12 +41,14 @@ public class ParkingFeeController {
 
     //    分页查询数据
     @PutMapping("parkingList")
+    @RequiresPermissions("rms:parkingFee:sel")
     public ResponseResult parkingFeeList(@RequestBody QueryCondition<ParkingFree> queryCondition) {
         return parkingFreeService.parkingFeeList(queryCondition);
     }
 
     //    根据id获取停车信息
     @GetMapping("{pid}")
+    @RequiresPermissions("rms:parkingFee:update")
     public ResponseResult getParkingFeeById(@PathVariable Integer pid) {
         ParkingFree parkingFree = parkingFreeService.getById(pid);
         return ResponseResult.success().data(parkingFree);
@@ -53,6 +56,7 @@ public class ParkingFeeController {
 
     //    批量删除
     @DeleteMapping
+    @RequiresPermissions("rms:parkingFee:delete")
     @Logs(model = "停车费",operation = Operation.DELETE)
     public ResponseResult delParkingFees(@RequestBody Integer[] pIds) {
         return parkingFreeService.delParkingFees(pIds);
@@ -60,6 +64,7 @@ public class ParkingFeeController {
 
     //    添加或修改停车费表
     @PostMapping("sOrU")
+    @RequiresPermissions("rms:parkingFee:add")
     @Logs(model = "停车费",operation = Operation.ADD)
     public ResponseResult saveOrUpdate(@RequestBody ParkingFree parkingFree) {
         if (ObjectUtils.isEmpty(parkingFree.getId())) {
@@ -83,6 +88,7 @@ public class ParkingFeeController {
 
     //    月份更替扣钱
     @PostMapping("updateAll")
+    @RequiresPermissions("rms:parkingFee:update")
     public ResponseResult updateAll() {
         List<ParkingFree> parkingFrees = parkingFreeService.list();
         List<ParkingFree> collect = parkingFrees.stream().map(parkingFree -> {
@@ -95,6 +101,7 @@ public class ParkingFeeController {
 
     //    批量导出
     @GetMapping("batchExport")
+    @RequiresPermissions("rms:parkingFee:export")
     public void batchExport(Integer oid, Integer did, HttpServletResponse response) throws IOException {
         LambdaQueryWrapper<ParkingFree> lambda = new QueryWrapper<ParkingFree>().lambda();
         lambda.eq(ObjectUtils.isNotEmpty(oid), ParkingFree::getOid, oid)

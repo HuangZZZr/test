@@ -14,6 +14,7 @@ import com.rms.backend.entity.House;
 import com.rms.backend.service.HouseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,7 @@ public class HouseController {
 
     //房屋列表
     @PostMapping("/list")
+    @RequiresPermissions("rms:house:sel")
     public ResponseResult houseList(@RequestBody QueryCondition<House> queryCondition){
         return houseService.houseList(queryCondition);
     }
@@ -57,6 +59,7 @@ public class HouseController {
 
     //批量导入
     @PostMapping("houseImport")
+    @RequiresPermissions("rms:house:add")
     @Logs(model = "房屋",operation = Operation.ADD)
     public ResponseResult houseImport(MultipartFile file){
         return houseService.houseImport(file);
@@ -67,6 +70,7 @@ public class HouseController {
 
     //批量导出
     @GetMapping("houseExport")
+    @RequiresPermissions("rms:house:export")
     public void houseExport(HttpServletResponse response,Integer uid,String numbering,Integer statue) throws IOException {
 
 

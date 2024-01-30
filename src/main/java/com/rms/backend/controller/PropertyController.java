@@ -66,13 +66,14 @@ public class PropertyController {
 
     //列表展示
     @PostMapping ("list")
+    @RequiresPermissions("rms:property:select")
     public ResponseResult propertyList(@RequestBody QueryCondition<Property> queryCondition){
         return  propertyService.getList(queryCondition);
     }
 
     //修改或新增
     @PostMapping("saveOrUpdatePropertyInfo")
-    @RequiresPermissions("rms:property:update")
+    @RequiresPermissions("rms:property:add")
     @Logs(model = "用户",operation = Operation.ADD)
     public ResponseResult saveOrUpdatePropertyInfo(@RequestBody ProPertyForm property){
         //查询名字是否重复 property和owner表
@@ -109,6 +110,7 @@ public class PropertyController {
 
     //修改状态
     @PostMapping("state")
+    @RequiresPermissions("rms:property:update")
     public ResponseResult editPropertyState(@RequestBody Property property){
         propertyService.updateById(property);
         return ResponseResult.success().message("修改成功");
@@ -116,6 +118,7 @@ public class PropertyController {
 
     //获取property信息，用于回显
     @GetMapping("getInfo/{id}")
+    @RequiresPermissions("rms:property:update")
     public ResponseResult getInfoById(@PathVariable Integer id){
         Property property = propertyService.getById(id);
         List<Integer> collect = proRoleService.list(new QueryWrapper<ProRole>().lambda().eq(ProRole::getPid, property.getId()))
@@ -128,6 +131,7 @@ public class PropertyController {
 
     //删除property信息
     @DeleteMapping("{id}")
+    @RequiresPermissions("rms:property:delete")
     @Logs(model = "用户",operation = Operation.DELETE)
     public ResponseResult deleteByIds(@PathVariable Integer id){
         return  propertyService.batchDelete(id);

@@ -7,6 +7,7 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Notice;
 import com.rms.backend.mapper.NoticeMapper;
 import com.rms.backend.service.NoticeService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +31,7 @@ public class NoticeController {
 
     //分页查询
     @PutMapping("noticeList")
+    @RequiresPermissions("rms:notice:sel")
     public ResponseResult noticeList(@RequestBody QueryCondition<Notice> queryCondition){
         return noticeService.noticeList(queryCondition);
 
@@ -38,6 +40,7 @@ public class NoticeController {
 
     //新增
     @PostMapping("noticeAdd")
+    @RequiresPermissions("rms:notice:add")
     @Logs(model = "公告",operation = Operation.ADD)
     public ResponseResult noticeAdd(@RequestBody Notice notice){
         noticeService.save(notice);
@@ -46,6 +49,7 @@ public class NoticeController {
 
     //删除
     @DeleteMapping("{id}")
+    @RequiresPermissions("rms:notice:delete")
     @Logs(model = "公告",operation = Operation.DELETE)
     public ResponseResult noticeDle(@PathVariable Integer id){
 

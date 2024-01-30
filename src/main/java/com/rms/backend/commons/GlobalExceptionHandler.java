@@ -2,6 +2,7 @@ package com.rms.backend.commons;
 
 
 import com.rms.backend.exceptions.HouseNoException;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,4 +28,9 @@ public class GlobalExceptionHandler {
         return ResponseResult.error();
     }
 
+    @ExceptionHandler(AuthorizationException.class)
+    public ResponseResult authorizationExceptionHandler(AuthorizationException e){
+        e.printStackTrace();
+        return ResponseResult.error().code(403).message("你没有权限进行该操作，请联系管理员");
+    }
 }

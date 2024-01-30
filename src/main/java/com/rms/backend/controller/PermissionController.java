@@ -8,6 +8,7 @@ import com.rms.backend.entity.Permission;
 import com.rms.backend.entity.RolePers;
 import com.rms.backend.service.PermissionService;
 import com.rms.backend.service.RolePersService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,6 +31,7 @@ public class PermissionController {
 
     //列表展示
     @GetMapping
+    @RequiresPermissions("sys:auth:select")
     public ResponseResult getList(){
         List<Permission> list = permissionService.list();
         return ResponseResult.success().data(list);
@@ -39,6 +41,7 @@ public class PermissionController {
 
     //新增
     @PostMapping("souPer")
+    @RequiresPermissions("sys:auth:add")
     public ResponseResult addPermission(@RequestBody Permission permission){
         permissionService.saveOrUpdate(permission);
         return ResponseResult.success().message("新增成功");
@@ -46,6 +49,7 @@ public class PermissionController {
 
     //根据菜单查询
     @GetMapping("search")
+    @RequiresPermissions("sys:auth:select")
     public ResponseResult getPermissionByTitle(String title){
         LambdaQueryWrapper<Permission> lambda = new QueryWrapper<Permission>().lambda();
         lambda.eq(Permission::getTitle,title);
@@ -54,6 +58,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("{pid}")
+    @RequiresPermissions("sys:auth:delete")
     public ResponseResult deletePermission(@PathVariable Integer pid){
         //传来的虽然是主键id，但主键id与子权限的pid对象，通过id=pid查询是否有子权限
         LambdaQueryWrapper<Permission> lambda = new QueryWrapper<Permission>().lambda();
@@ -71,6 +76,7 @@ public class PermissionController {
     }
     //根据id查询回显数据
     @GetMapping("{pid}")
+    @RequiresPermissions("sys:auth:update")
     public ResponseResult getPermissionById(@PathVariable Integer pid){
 
         Permission permission = permissionService.getById(pid);

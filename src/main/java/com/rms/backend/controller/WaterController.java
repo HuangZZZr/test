@@ -14,6 +14,7 @@ import com.rms.backend.mapper.WaterMapper;
 import com.rms.backend.service.WaterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,6 +45,7 @@ public class WaterController {
 
     //分页查询
     @PostMapping("list")
+    @RequiresPermissions("rms:water:sel")
     public ResponseResult waterList(@RequestBody QueryCondition<House> queryCondition){
         return waterService.waterList(queryCondition);
 
@@ -52,6 +54,7 @@ public class WaterController {
 
     //批量导出
     @GetMapping("waterExport")
+    @RequiresPermissions("rms:water:export")
     public void waterExport(HttpServletResponse response) throws IOException {
 
         List<Water> list = waterService.list();
@@ -69,6 +72,7 @@ public class WaterController {
 
     //修改水费
     @PutMapping("waterUpData")
+    @RequiresPermissions("rms:water:update")
     @Logs(model = "水费",operation = Operation.UPDATE)
     public ResponseResult waterUpData(@RequestBody Water water){
         System.out.println("water = " + water);

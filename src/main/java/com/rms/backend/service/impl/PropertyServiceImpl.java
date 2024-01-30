@@ -188,7 +188,7 @@ public class PropertyServiceImpl extends ServiceImpl<PropertyMapper, Property>
     public ResponseResult editPassword(PasswordForm passwordForm, HttpServletRequest request) {
         String token = request.getHeader("token");
         Map<String, Object> claim = jwtUtil.getClaims(token);
-        String name = (String) claim.get("name");
+        String name = (String) claim.get("account");
         Integer id = (Integer) claim.get("id");
         LambdaQueryWrapper<Property> lambda = new QueryWrapper<Property>().lambda();
         lambda.eq(Property::getAccount,name);

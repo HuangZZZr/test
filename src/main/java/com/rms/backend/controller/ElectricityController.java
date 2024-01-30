@@ -14,6 +14,7 @@ import com.rms.backend.entity.Water;
 import com.rms.backend.service.ElectricityService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,6 +39,7 @@ public class ElectricityController {
 
     //分页查询
     @PostMapping("list")
+    @RequiresPermissions("rms:ele:sel")
     public ResponseResult eleList(@RequestBody QueryCondition<House> queryCondition){
         return electricityService.eleList(queryCondition);
 
@@ -46,6 +48,7 @@ public class ElectricityController {
 
     //批量导出
     @GetMapping("eleExport")
+    @RequiresPermissions("rms:ele:export")
     public void waterExport(HttpServletResponse response) throws IOException {
 
         LambdaQueryWrapper<Electricity> lambda = new QueryWrapper<Electricity>().lambda();
@@ -65,6 +68,7 @@ public class ElectricityController {
 
     //修改电费
     @PutMapping("eleUpData")
+    @RequiresPermissions("rms:ele:update")
     @Logs(model = "电费",operation = Operation.UPDATE)
     public ResponseResult eleUpData(@RequestBody Electricity electricity){
         Double amount = electricity.getAmount();

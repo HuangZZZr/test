@@ -31,6 +31,7 @@ public class OwnerController {
     private OwnerHouseService ownerHouseService;
     //1、查询业主信息
     @PostMapping("/list")
+    @RequiresPermissions("rms:owner:sel")
     public ResponseResult ownerList(@RequestBody QueryCondition<Owner> queryCondition){
 
         return ownerService.ownerList(queryCondition);
@@ -39,12 +40,14 @@ public class OwnerController {
     //2、新增业主信息 password=666666  初始化房屋水电费
 
     @PostMapping("save")
+    @RequiresPermissions("rms:owner:add")
     @Logs(model = "业主",operation = Operation.ADD)
     public ResponseResult addOwner(@RequestBody OwnerVO ownerVO){
         return ownerService.saveOwner(ownerVO);
     }
     //3、修改业主信息
     @PutMapping("update")
+    @RequiresPermissions("rms:owner:state")
     @Logs(model = "业主",operation = Operation.UPDATE)
     public ResponseResult editOwner(@RequestBody OwnerVO ownerVO){
         Owner owner = new Owner();
@@ -55,6 +58,7 @@ public class OwnerController {
     //4、删除业主信息 结算水电费 删除关联房屋水电费表、车位费表的信息
 
     @DeleteMapping("{id}")
+    @RequiresPermissions("rms:owner:delete")
     @Logs(model = "业主",operation = Operation.DELETE)
     public ResponseResult delete(@PathVariable Integer id){
         return ownerService.removeById(id);
@@ -78,6 +82,7 @@ public class OwnerController {
 
     //编辑用户状态
     @PutMapping("state")
+    @RequiresPermissions("rms:owner:state")
     public ResponseResult editState(@RequestBody Owner owner) {
         ownerService.updateById(owner);
         return ResponseResult.success().message("状态更新成功");

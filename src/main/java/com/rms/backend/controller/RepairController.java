@@ -7,6 +7,7 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Complain;
 import com.rms.backend.entity.Repair;
 import com.rms.backend.service.RepairService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ public class RepairController {
     private RepairService repairService;
 
     @PutMapping("list")
+    @RequiresPermissions("rms:repair:sel")
     public ResponseResult getRepairList(@RequestBody QueryCondition<Repair> queryCondition){
         return repairService.getRepairList(queryCondition);
     }
@@ -27,12 +29,14 @@ public class RepairController {
 
     //修改状态
     @PutMapping("state")
+    @RequiresPermissions("rms:repair:update")
     public ResponseResult editState (@RequestBody Repair repair){
         repairService.updateById(repair);
         return ResponseResult.success().message("状态更新成功");
     }
     //添加维修
     @PutMapping("save")
+    @RequiresPermissions("rms:repair:save")
     @Logs(model = "维修",operation = Operation.ADD)
     public ResponseResult addRepair(@RequestBody Repair repair){
 
@@ -42,6 +46,7 @@ public class RepairController {
 
     //批量删除
     @DeleteMapping
+    @RequiresPermissions("rms:repair:delete")
     @Logs(model = "维修",operation = Operation.DELETE)
     public ResponseResult deleteComplain(@RequestBody Integer[] ids){
         repairService.removeBatchByIds(Arrays.asList(ids));

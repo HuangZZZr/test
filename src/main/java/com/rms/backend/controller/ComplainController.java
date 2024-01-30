@@ -6,6 +6,7 @@ import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Complain;
 import com.rms.backend.service.ComplainService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ public class ComplainController {
     private ComplainService complainService;
 
     @PostMapping("list")
+    @RequiresPermissions("rms:complain:sel")
     public ResponseResult getComplainList(@RequestBody QueryCondition<Complain> queryCondition){
 
         return complainService.getComplainList(queryCondition);
@@ -27,6 +29,7 @@ public class ComplainController {
 
     //添加投诉
     @PutMapping("addComplain")
+    @RequiresPermissions("rms:complain:add")
     @Logs(model = "投诉",operation = Operation.ADD)
     public ResponseResult addComplain(@RequestBody Complain complain){
 
@@ -38,6 +41,7 @@ public class ComplainController {
 
     //批量投诉删除
     @DeleteMapping
+    @RequiresPermissions("rms:complain:delete")
     @Logs(model = "投诉",operation = Operation.DELETE)
     public ResponseResult deleteComplain(@RequestBody Integer[] ids){
         complainService.removeBatchByIds(Arrays.asList(ids));
@@ -46,6 +50,7 @@ public class ComplainController {
 
     //修改投诉状态
     @PostMapping("state")
+    @RequiresPermissions("rms:complain:update")
     public ResponseResult editState (@RequestBody Complain complain){
         complainService.updateById(complain);
         return ResponseResult.success().message("状态更新成功");
