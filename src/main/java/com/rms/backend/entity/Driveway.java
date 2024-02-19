@@ -21,6 +21,12 @@ public class Driveway implements Serializable {
     private Integer id;
 
     /**
+     * 车位号
+     */
+    @TableField(value = "nos")
+    private String nos;
+
+    /**
      * 车位类型（A，B，C），体现大小
      */
     @TableField(value = "car_kind")
@@ -31,6 +37,12 @@ public class Driveway implements Serializable {
      */
     @TableField(value = "statue")
     private Integer statue;
+
+    /**
+     * 栋数
+     */
+    @TableField(value = "ridgepole")
+    private String ridgepole;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

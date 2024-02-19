@@ -6,12 +6,14 @@
 
     <resultMap id="BaseResultMap" type="com.rms.backend.entity.Driveway">
             <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="nos" column="nos" jdbcType="VARCHAR"/>
             <result property="carKind" column="car_kind" jdbcType="VARCHAR"/>
             <result property="statue" column="statue" jdbcType="INTEGER"/>
+            <result property="ridgepole" column="ridgepole" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,car_kind,statue
+        id,nos,car_kind,statue,ridgepole
     </sql>
     <select id="drivewayData" resultType="com.rms.backend.entity.Driveway">
         select * from driveway where statue=0

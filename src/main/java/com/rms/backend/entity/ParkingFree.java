@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 
@@ -16,6 +17,7 @@ import lombok.Data;
  */
 @TableName(value ="parking_free")
 @Data
+@Accessors(chain = true)
 @ExcelTarget("parkingFee")
 public class ParkingFree implements Serializable {
     /**

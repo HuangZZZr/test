@@ -10,17 +10,25 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Driveway;
 import com.rms.backend.entity.OwnerDri;
 import com.rms.backend.entity.ParkingFree;
+import com.rms.backend.form.ParkingFeeForm;
 import com.rms.backend.mapper.DrivewayMapper;
 import com.rms.backend.mapper.OwnerDriMapper;
+import com.rms.backend.mapper.OwnerMapper;
 import com.rms.backend.service.ParkingFreeService;
 import com.rms.backend.mapper.ParkingFreeMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author YiXin
@@ -35,19 +43,49 @@ public class ParkingFreeServiceImpl extends ServiceImpl<ParkingFreeMapper, Parki
     private DrivewayMapper drivewayMapper;
     @Resource
     private OwnerDriMapper ownerDriMapper;
+    @Resource
+    private OwnerMapper ownerMapper;
+
     @Override
-    public ResponseResult parkingFeeList(QueryCondition<ParkingFree> queryCondition) {
+    public ResponseResult parkingFeeList(QueryCondition<Driveway> queryCondition) {
         Page<ParkingFree> parkingFreePage = new Page<>(queryCondition.getPage(), queryCondition.getLimit());
+//        先判断是否传nos过来，根据车位号获取did
+        Integer did = null;
+        if (ObjectUtils.isNotEmpty(queryCondition.getQuery().getNos())) {
+            Driveway driveway = drivewayMapper.selectOne(new QueryWrapper<Driveway>().lambda().eq(Driveway::getNos, queryCondition.getQuery().getNos()));
+            if (ObjectUtils.isEmpty(driveway)) {
+                return ResponseResult.fail().message("无该车位");
+            }
+            did = driveway.getId();
+        }
         LambdaQueryWrapper<ParkingFree> lambda = new QueryWrapper<ParkingFree>().lambda();
-        lambda.eq(ObjectUtils.isNotEmpty(queryCondition.getQuery().getOid()), ParkingFree::getOid, queryCondition.getQuery().getOid())
-                .eq(ObjectUtils.isNotEmpty(queryCondition.getQuery().getDid()), ParkingFree::getDid, queryCondition.getQuery().getDid())
-                .orderByDesc(ParkingFree::getUpdateTime);
+        lambda.eq(ObjectUtils.isNotEmpty(did), ParkingFree::getDid, did).orderByDesc(ParkingFree::getUpdateTime);
         baseMapper.selectPage(parkingFreePage, lambda);
 
         long total = parkingFreePage.getTotal();
         List<ParkingFree> parkingFrees = parkingFreePage.getRecords();
+        List<ParkingFeeForm> collect = parkingFrees.stream().map(parkingFree -> {
+            //获取时间，判断是否达30天，到达则扣费更新
+            Date updateTime = parkingFree.getUpdateTime();
+            Integer days = dayGet(updateTime);
+            if (days==30){
+                parkingFree.setPayMoney(0).setBalance(parkingFree.getBalance()-120).setUpdateTime(new Date());
+                baseMapper.updateById(parkingFree);
+            }
+
+            //创建新对象封装
+            ParkingFeeForm parkingFeeForm = new ParkingFeeForm();
+            BeanUtils.copyProperties(parkingFree, parkingFeeForm);
+            //获取业主账户
+            String username = ownerMapper.selectById(parkingFree.getOid()).getUsername();
+            parkingFeeForm.setAccount(username);
+            //获取车位号
+            String nos = drivewayMapper.selectById(parkingFree.getDid()).getNos();
+            parkingFeeForm.setNos(nos);
+            return parkingFeeForm;
+        }).collect(Collectors.toList());
         HashMap<String, Object> map = new HashMap<>();
-        map.put("pageData", parkingFrees);
+        map.put("pageData", collect);
         map.put("total", total);
         return ResponseResult.success().data(map);
     }
@@ -66,10 +104,20 @@ public class ParkingFreeServiceImpl extends ServiceImpl<ParkingFreeMapper, Parki
             driveway.setStatue(0);
             drivewayMapper.updateById(driveway);
             //      删除关联表和业主关联的信息
-            ownerDriMapper.delete(new QueryWrapper<OwnerDri>().lambda().eq(OwnerDri::getDid,driveway.getId()));
+            ownerDriMapper.delete(new QueryWrapper<OwnerDri>().lambda().eq(OwnerDri::getDid, driveway.getId()));
         }
         baseMapper.deleteBatchIds(ids);
         return ResponseResult.success();
+    }
+
+    //    时间差计算，传入过去时间
+    public Integer dayGet(Date oldTime) {
+        Long starTime = Date.parse(String.valueOf(oldTime));//开始时间
+        Long endTime = Date.parse(String.valueOf(new Date()));//当前时间
+        Long num = endTime - starTime;//时间戳相差的毫秒数
+        System.out.println("相差天数为：" + num / 24 / 60 / 60 / 1000);//除以一天的毫秒数
+        Integer days = (int) (num / 24 / 60 / 60 / 1000);
+        return days;
     }
 }
 

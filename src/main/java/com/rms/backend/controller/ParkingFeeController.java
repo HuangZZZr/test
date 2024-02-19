@@ -10,13 +10,15 @@ import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Driveway;
-import com.rms.backend.entity.OwnerDri;
 import com.rms.backend.entity.ParkingFree;
+import com.rms.backend.form.ParkingFeeForm;
 import com.rms.backend.service.DrivewayService;
 import com.rms.backend.service.OwnerDriService;
+import com.rms.backend.service.OwnerService;
 import com.rms.backend.service.ParkingFreeService;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,11 +40,13 @@ public class ParkingFeeController {
 
     @Resource
     private OwnerDriService ownerDriService;
+    @Resource
+    private OwnerService ownerService;
 
     //    分页查询数据
     @PutMapping("parkingList")
     @RequiresPermissions("rms:parkingFee:sel")
-    public ResponseResult parkingFeeList(@RequestBody QueryCondition<ParkingFree> queryCondition) {
+    public ResponseResult parkingFeeList(@RequestBody QueryCondition<Driveway> queryCondition) {
         return parkingFreeService.parkingFeeList(queryCondition);
     }
 
@@ -51,7 +55,15 @@ public class ParkingFeeController {
     @RequiresPermissions("rms:parkingFee:update")
     public ResponseResult getParkingFeeById(@PathVariable Integer pid) {
         ParkingFree parkingFree = parkingFreeService.getById(pid);
-        return ResponseResult.success().data(parkingFree);
+        ParkingFeeForm parkingFeeForm = new ParkingFeeForm();
+        BeanUtils.copyProperties(parkingFree,parkingFeeForm);
+//        获取用户账户
+        String username = ownerService.getById(parkingFree.getOid()).getUsername();
+        parkingFeeForm.setAccount(username);
+//        获取车位号
+        String nos = drivewayService.getById(parkingFree.getDid()).getNos();
+        parkingFeeForm.setNos(nos);
+        return ResponseResult.success().data(parkingFeeForm);
     }
 
     //    批量删除
@@ -62,11 +74,12 @@ public class ParkingFeeController {
         return parkingFreeService.delParkingFees(pIds);
     }
 
-    //    添加或修改停车费表
+    //    修改停车费表
     @PostMapping("sOrU")
     @RequiresPermissions("rms:parkingFee:add")
     @Logs(model = "停车费",operation = Operation.ADD)
     public ResponseResult saveOrUpdate(@RequestBody ParkingFree parkingFree) {
+        /*
         if (ObjectUtils.isEmpty(parkingFree.getId())) {
             //      如果是添加操作，对车位表车位状态进行修改1(已被使用)
             Driveway driveway = drivewayService.getById(parkingFree.getDid());
@@ -79,9 +92,10 @@ public class ParkingFeeController {
             ownerDriService.save(ownerDri);
             parkingFree.setBalance(parkingFree.getPayMoney());
         }else {
+            */
             parkingFree.setBalance(parkingFree.getPayMoney() + parkingFree.getBalance());
             parkingFree.setUpdateTime(new Date());
-        }
+//        }
         parkingFreeService.saveOrUpdate(parkingFree);
         return ResponseResult.success();
     }

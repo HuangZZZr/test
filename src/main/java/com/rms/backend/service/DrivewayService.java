@@ -4,6 +4,7 @@ import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Driveway;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.rms.backend.form.RentForm;
 
 /**
 * @author YiXin
@@ -19,4 +20,6 @@ public interface DrivewayService extends IService<Driveway> {
     ResponseResult saveOrUpdateDavewat(Driveway driveway);
 
     ResponseResult getdrivewayData();
+
+    ResponseResult rentDriveWay(RentForm rentForm);
 }

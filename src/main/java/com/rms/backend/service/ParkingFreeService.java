@@ -2,6 +2,7 @@ package com.rms.backend.service;
 
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
+import com.rms.backend.entity.Driveway;
 import com.rms.backend.entity.ParkingFree;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,7 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ParkingFreeService extends IService<ParkingFree> {
 
-    ResponseResult parkingFeeList(QueryCondition<ParkingFree> queryCondition);
+    ResponseResult parkingFeeList(QueryCondition<Driveway> queryCondition);
 
     ResponseResult delParkingFees(Integer[] pIds);
 }
