@@ -8,6 +8,7 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Owner;
 import com.rms.backend.entity.OwnerHouse;
 import com.rms.backend.form.OwnerForm;
+import com.rms.backend.service.HouseService;
 import com.rms.backend.service.OwnerHouseService;
 import com.rms.backend.service.OwnerService;
 import com.rms.backend.utils.SaltUtil;
@@ -29,6 +30,8 @@ public class OwnerController {
     private OwnerService ownerService;
     @Resource
     private OwnerHouseService ownerHouseService;
+    @Resource
+    private HouseService houseService;
     //1、查询业主信息
     @PostMapping("/list")
     @RequiresPermissions("rms:owner:sel")
@@ -95,7 +98,8 @@ public class OwnerController {
         OwnerVO ownerVO = new OwnerVO();
         BeanUtils.copyProperties(owner,ownerVO);
         Integer hid = ownerHouseService.getOne(new QueryWrapper<OwnerHouse>().lambda().eq(OwnerHouse::getOid, id)).getHid();
-        ownerVO.setHid(hid);
+        String numbering = houseService.getById(hid).getNumbering();
+        ownerVO.setNumbering(numbering);
         return ResponseResult.success().data(ownerVO);
     }
     //根据username查询

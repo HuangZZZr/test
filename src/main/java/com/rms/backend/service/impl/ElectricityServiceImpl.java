@@ -49,6 +49,8 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
             HashMap<String,Object> eleHashMap = new HashMap<>();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
             eleHashMap.put("numbering",numbering);
+            eleHashMap.put("ebefore",data.getEbefore());
+            eleHashMap.put("enow",data.getEnow());
             eleHashMap.put("balance",balance);
             return eleHashMap;
         }).collect(Collectors.toList());

@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class OwnerVO extends Owner {
-    private Integer hid;
+    private String numbering;
 }

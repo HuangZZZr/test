@@ -104,20 +104,21 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         baseMapper.insert(owner);
 
 //        添加房屋关联
+        Integer hid = houseMapper.selectOne(new QueryWrapper<House>().lambda().eq(House::getNumbering, ownerVO.getNumbering())).getId();
         OwnerHouse ownerHouse = new OwnerHouse();
-        ownerHouse.setHid(ownerVO.getHid());
+        ownerHouse.setHid(hid);
         ownerHouse.setOid(owner.getId());
         ownerHouseMapper.insert(ownerHouse);
 
 //        改变入住房屋状态
-        House house = houseMapper.selectById(ownerVO.getHid());
+        House house = houseMapper.selectById(hid);
         house.setStatue(1);
         houseMapper.updateById(house);
 
         //设置水费表的余额和缴费金额为0
         Water water = new Water();
         water.setOid(owner.getId());
-        water.setHid(ownerVO.getHid());
+        water.setHid(hid);
         water.setPaymentTime(new Date());
         water.setUpdateTime(new Date());
         water.setAmount(0.00);
@@ -127,7 +128,7 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         //设置电费表的余额和缴费金额为0
         Electricity electricity = new Electricity();
         electricity.setOid(owner.getId());
-        electricity.setHid(ownerVO.getHid());
+        electricity.setHid(hid);
         electricity.setPaymentTime(new Date());
         electricity.setUpdateTime(new Date());
         electricity.setPayment(0.00);

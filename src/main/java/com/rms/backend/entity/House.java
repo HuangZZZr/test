@@ -27,7 +27,6 @@ public class House implements Serializable {
      * 单元id
      */
     @TableField(value = "uid")
-    @Excel(name = "单元id")
     private Integer uid;
 
     /**

@@ -29,14 +29,12 @@ public class Water implements Serializable {
      * 房屋id
      */
     @TableField(value = "hid")
-    @Excel(name = "房屋id",orderNum = "2")
     private Integer hid;
 
     /**
      * 业主id
      */
     @TableField(value = "oid")
-    @Excel(name = "业主id",orderNum = "3")
     private Integer oid;
 
     /**

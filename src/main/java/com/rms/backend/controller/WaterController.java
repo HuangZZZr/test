@@ -10,11 +10,15 @@ import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.House;
 import com.rms.backend.entity.Water;
+import com.rms.backend.from.WaterFrom;
 import com.rms.backend.mapper.WaterMapper;
+import com.rms.backend.service.HouseService;
+import com.rms.backend.service.OwnerService;
 import com.rms.backend.service.WaterService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Projectname: rms-backend
@@ -40,9 +45,10 @@ public class WaterController {
     private WaterService waterService;
 
     @Resource
-    private WaterMapper waterMapper;
+    private OwnerService ownerService;
 
-
+    @Resource
+    private HouseService houseService;
     //分页查询
     @PostMapping("list")
     @RequiresPermissions("rms:water:sel")
@@ -58,9 +64,18 @@ public class WaterController {
     public void waterExport(HttpServletResponse response) throws IOException {
 
         List<Water> list = waterService.list();
+        List<WaterFrom> collect = list.stream().map(water -> {
+            WaterFrom waterFrom = new WaterFrom();
+            BeanUtils.copyProperties(water, waterFrom);
+            String name = ownerService.getById(water.getOid()).getName();
+            String numbering = houseService.getById(water.getHid()).getNumbering();
+            waterFrom.setNumbering(numbering);
+            waterFrom.setWname(name);
+            return waterFrom;
+        }).collect(Collectors.toList());
 
         ExportParams exportParams = new ExportParams("房屋水费信息", "水费表");
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Water.class, list);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, WaterFrom.class, collect);
 
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

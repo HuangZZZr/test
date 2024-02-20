@@ -91,4 +91,12 @@ public class HouseController {
         outputStream.close();
 
     }
+
+//    获取未出售房屋接口
+    @GetMapping("housesGet")
+    public ResponseResult housesGet(){
+        Integer state = 0;
+        List<House> houses = houseService.list(new QueryWrapper<House>().lambda().eq(House::getStatue, state));
+        return ResponseResult.success().data(houses);
+    }
 }

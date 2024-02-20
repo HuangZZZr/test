@@ -5,9 +5,12 @@ import com.rms.backend.commons.Operation;
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Complain;
+import com.rms.backend.entity.Owner;
 import com.rms.backend.entity.Repair;
+import com.rms.backend.form.RepairForm;
 import com.rms.backend.service.RepairService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,7 +25,7 @@ public class RepairController {
 
     @PutMapping("list")
     @RequiresPermissions("rms:repair:sel")
-    public ResponseResult getRepairList(@RequestBody QueryCondition<Repair> queryCondition){
+    public ResponseResult getRepairList(@RequestBody QueryCondition<Owner> queryCondition){
         return repairService.getRepairList(queryCondition);
     }
 

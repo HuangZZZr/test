@@ -49,6 +49,8 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water>
             Double balance = data.getAmount();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
             waterHashMap.put("numbering",numbering);
+            waterHashMap.put("wbefore",data.getWbefore());
+            waterHashMap.put("wnow",data.getWnow());
             waterHashMap.put("balance",balance);
             return waterHashMap;
         }).collect(Collectors.toList());

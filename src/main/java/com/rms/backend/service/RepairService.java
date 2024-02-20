@@ -2,6 +2,7 @@ package com.rms.backend.service;
 
 import com.rms.backend.commons.QueryCondition;
 import com.rms.backend.commons.ResponseResult;
+import com.rms.backend.entity.Owner;
 import com.rms.backend.entity.Repair;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,5 +15,5 @@ public interface RepairService extends IService<Repair> {
 
     ResponseResult getpepairData();
 
-    ResponseResult getRepairList(QueryCondition<Repair> queryCondition);
+    ResponseResult getRepairList(QueryCondition<Owner> queryCondition);
 }
