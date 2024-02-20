@@ -11,10 +11,15 @@ import com.rms.backend.commons.ResponseResult;
 import com.rms.backend.entity.Electricity;
 import com.rms.backend.entity.House;
 import com.rms.backend.entity.Water;
+import com.rms.backend.from.EleFrom;
+import com.rms.backend.from.WaterFrom;
 import com.rms.backend.service.ElectricityService;
+import com.rms.backend.service.HouseService;
+import com.rms.backend.service.OwnerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,6 +27,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Projectname: rms-backend
@@ -36,7 +42,11 @@ public class ElectricityController {
 
     @Resource
     private ElectricityService electricityService;
+    @Resource
+    private OwnerService ownerService;
 
+    @Resource
+    private HouseService houseService;
     //分页查询
     @PostMapping("list")
     @RequiresPermissions("rms:ele:sel")
@@ -54,10 +64,19 @@ public class ElectricityController {
         LambdaQueryWrapper<Electricity> lambda = new QueryWrapper<Electricity>().lambda();
 
         List<Electricity> list = electricityService.list(lambda);
+        List<EleFrom> collect = list.stream().map(ele -> {
+            EleFrom eleFrom = new EleFrom();
+            BeanUtils.copyProperties(ele, eleFrom);
+            String name = ownerService.getById(ele.getOid()).getName();
+            String numbering = houseService.getById(ele.getHid()).getNumbering();
+            eleFrom.setNumbering(numbering);
+            eleFrom.setEname(name);
+            return eleFrom;
+        }).collect(Collectors.toList());
 
         ExportParams exportParams = new ExportParams("房屋电费信息", "电费表");
 
-        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, Electricity.class, list);
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, EleFrom.class, collect);
 
         ServletOutputStream outputStream = response.getOutputStream();
         workbook.write(outputStream);

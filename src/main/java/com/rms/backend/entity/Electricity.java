@@ -22,34 +22,33 @@ public class Electricity implements Serializable {
      * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
+    @Excel(name = "序号",orderNum = "1")
     private Integer id;
 
     /**
      * 房屋id
      */
     @TableField(value = "hid")
-    @Excel(name = "房屋id")
     private Integer hid;
 
     /**
      * 业主id
      */
     @TableField(value = "oid")
-    @Excel(name = "业主id")
     private Integer oid;
 
     /**
      * 缴费年月
      */
     @TableField(value = "payment_time")
-    @Excel(name = "缴费年月")
+    @Excel(name = "缴费年月",orderNum = "4")
     private Date paymentTime;
 
     /**
      * 更新时间
      */
     @TableField(value = "update_time")
-    @Excel(name = "更新时间")
+    @Excel(name = "更新时间",orderNum = "5")
     private Date updateTime;
 
     /**
