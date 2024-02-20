@@ -119,16 +119,20 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House>
         LambdaQueryWrapper<OwnerHouse> queryWrapper = new QueryWrapper<OwnerHouse>().lambda();
         queryWrapper.eq(OwnerHouse::getHid,id);
         OwnerHouse ownerHouse = ownerHouseMapper.selectOne(queryWrapper);
-        Integer oid = ownerHouse.getOid();
-        String name = ownerMapper.selectById(oid).getName();
-        houseViewVo.setHouseName(name);
+        if (ObjectUtils.isNotEmpty(ownerHouse)){
+            Integer oid = ownerHouse.getOid();
+            String name = ownerMapper.selectById(oid).getName();
+            houseViewVo.setHouseName(name);
+        }
 
         //根据hid查询水费
         LambdaQueryWrapper<Water> waterLambdaQueryWrapper = new QueryWrapper<Water>().lambda();
         waterLambdaQueryWrapper.eq(Water::getHid,id);
         Water water = waterMapper.selectOne(waterLambdaQueryWrapper);
-        Double waterBalance = water.getBalance();
-        houseViewVo.setWater(waterBalance);
+        if (ObjectUtils.isNotEmpty(water)){
+            Double waterBalance = water.getAmount();
+            houseViewVo.setWater(waterBalance);
+        }
 
 
         //根据hid查询电费
@@ -136,8 +140,10 @@ public class HouseServiceImpl extends ServiceImpl<HouseMapper, House>
         LambdaQueryWrapper<Electricity> electricityLambda = new QueryWrapper<Electricity>().lambda();
         electricityLambda.eq(Electricity::getHid,id);
         Electricity electricity = electricityMapper.selectOne(electricityLambda);
-        Double eleBalance = electricity.getBalance();
-        houseViewVo.setEle(eleBalance);
+        if (ObjectUtils.isNotEmpty(electricity)){
+            Double eleBalance = electricity.getAmount();
+            houseViewVo.setEle(eleBalance);
+        }
 
         return ResponseResult.success().data(houseViewVo);
     }

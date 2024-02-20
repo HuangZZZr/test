@@ -99,6 +99,10 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
                     ownerDriMapper.delete(new QueryWrapper<OwnerDri>().lambda().eq(OwnerDri::getDid, driveway.getId()));
                 }
             }
+
+            //      还需对车位用户关联表删除
+            ownerDriMapper.delete(new QueryWrapper<OwnerDri>().lambda().eq(OwnerDri::getDid,driveway.getId()));
+
             baseMapper.updateById(driveway);
         } else {
             baseMapper.updateById(driveway);
@@ -117,7 +121,7 @@ public class DrivewayServiceImpl extends ServiceImpl<DrivewayMapper, Driveway>
     @Override
     public ResponseResult rentDriveWay(RentForm rentForm) {
 //        先去业主表查找是否有该账户
-        Owner owner = ownerMapper.selectOne(new QueryWrapper<Owner>().lambda().eq(Owner::getUsername, rentForm.getAccount()));
+        Owner owner = ownerMapper.selectOne(new QueryWrapper<Owner>().lambda().eq(Owner::getTel, rentForm.getTel()));
         if (ObjectUtils.isEmpty(owner)) {
             return ResponseResult.fail().message("该业主账号不存在");
         }

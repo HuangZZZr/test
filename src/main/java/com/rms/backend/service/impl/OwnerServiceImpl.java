@@ -121,7 +121,7 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         water.setPaymentTime(new Date());
         water.setUpdateTime(new Date());
         water.setAmount(0.00);
-        water.setBalance(0.00);
+        water.setPayment(0.00);
         waterMapper.insert(water);
 
         //设置电费表的余额和缴费金额为0
@@ -130,7 +130,7 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         electricity.setHid(ownerVO.getHid());
         electricity.setPaymentTime(new Date());
         electricity.setUpdateTime(new Date());
-        electricity.setBalance(0.00);
+        electricity.setPayment(0.00);
         electricity.setAmount(0.00);
         electricityMapper.insert(electricity);
 

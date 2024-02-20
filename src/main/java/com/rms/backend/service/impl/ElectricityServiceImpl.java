@@ -45,7 +45,7 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
 
         List<Electricity>datas=baseMapper.electricityData();
         List<Map> eledatas=datas.stream().map(data ->{
-            Double balance = data.getBalance();
+            Double balance = data.getAmount();
             HashMap<String,Object> eleHashMap = new HashMap<>();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
             eleHashMap.put("numbering",numbering);
@@ -72,7 +72,10 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
             EleFrom eleFrom = new EleFrom();
             BeanUtils.copyProperties(electricity,eleFrom);
             Integer hid = electricity.getHid();
+            Integer oid = electricity.getOid();
+            Owner owner = ownerMapper.selectById(oid);
             House house = houseMapper.selectById(hid);
+            eleFrom.setEname(owner.getName());
             eleFrom.setNumbering(house.getNumbering());
             return eleFrom;
         }).collect(Collectors.toList());

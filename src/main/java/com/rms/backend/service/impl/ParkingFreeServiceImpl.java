@@ -77,8 +77,8 @@ public class ParkingFreeServiceImpl extends ServiceImpl<ParkingFreeMapper, Parki
             ParkingFeeForm parkingFeeForm = new ParkingFeeForm();
             BeanUtils.copyProperties(parkingFree, parkingFeeForm);
             //获取业主账户
-            String username = ownerMapper.selectById(parkingFree.getOid()).getUsername();
-            parkingFeeForm.setAccount(username);
+            String tel = ownerMapper.selectById(parkingFree.getOid()).getTel();
+            parkingFeeForm.setTel(tel);
             //获取车位号
             String nos = drivewayMapper.selectById(parkingFree.getDid()).getNos();
             parkingFeeForm.setNos(nos);

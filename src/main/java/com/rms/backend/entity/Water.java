@@ -54,18 +54,34 @@ public class Water implements Serializable {
     private Date updateTime;
 
     /**
-     * 缴费金额
+     * 之前的吨数
      */
-    @TableField(value = "amount")
-    @Excel(name = "缴费金额",orderNum = "6")
-    private Double amount;
+    @TableField(value = "wbefore")
+    @Excel(name = "之前的吨数",orderNum = "6")
+    private Double wbefore;
 
     /**
-     * 余额
+     * 现在的吨数
      */
-    @TableField(value = "balance")
-    @Excel(name = "余额",orderNum = "1")
-    private Double balance;
+    @TableField(value = "wnow")
+    @Excel(name = "现在的吨数",orderNum = "7")
+    private Double wnow;
+
+    /**
+     * 应缴纳金额
+     */
+    @TableField(value = "payment")
+    @Excel(name = "应缴纳金额",orderNum = "8")
+    private Double payment;
+
+    /**
+     * 剩余金额
+     */
+    @TableField(value = "amount")
+    @Excel(name = "余额",orderNum = "9")
+    private Double amount;
+
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

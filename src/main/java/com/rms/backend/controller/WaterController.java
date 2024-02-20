@@ -46,7 +46,7 @@ public class WaterController {
     //分页查询
     @PostMapping("list")
     @RequiresPermissions("rms:water:sel")
-    public ResponseResult waterList(@RequestBody QueryCondition<House> queryCondition){
+    public ResponseResult waterList(@RequestBody QueryCondition<House> queryCondition) {
         return waterService.waterList(queryCondition);
 
     }
@@ -70,24 +70,77 @@ public class WaterController {
     }
 
 
-    //修改水费
-    @PutMapping("waterUpData")
-    @RequiresPermissions("rms:water:update")
-    @Logs(model = "水费",operation = Operation.UPDATE)
-    public ResponseResult waterUpData(@RequestBody Water water){
-        System.out.println("water = " + water);
-        Double amount = water.getAmount();
-        Double balance = water.getBalance();
-        water.setBalance(amount+balance);
+//    //修改水费
+//    @PutMapping("waterUpData")
+//    @RequiresPermissions("rms:water:update")
+//    @Logs(model = "水费",operation = Operation.UPDATE)
+//    public ResponseResult waterUpData(@RequestBody Water water){
+//        System.out.println("water = " + water);
+//        Double amount = water.getAmount();
+//        Double balance = water.getBalance();
+//        water.setBalance(amount+balance);
+//
+//        waterService.updateById(water);
+//        return ResponseResult.success();
+//    }
 
+    //水费结算
+    @PutMapping("waterUpData")
+    @Logs(model = "水费", operation = Operation.UPDATE)
+    public ResponseResult waterUpData(@RequestBody Water water) {
+        System.out.println("water #$%%$%$$% = " + water);
+        //计算余额
+        //计算余额
+        Double wbefore = water.getWbefore();
+        Double wnow = water.getWnow();
+        Double data=(wnow-wbefore);
+        double w=0;
+        if (data>100){
+            w=(data-100)*4+50*3+50*2;
+        } else if (data>50&&data<100) {
+            w=(data-50)*3+50*2;
+        }else {
+            w=data*2;
+        }
+        Double amount = water.getAmount()-w;
+
+        if (amount < 0) {
+            return ResponseResult.success().message("水费余额不足，请及时缴纳");
+        } else {
+            water.setAmount(amount);
+            water.setPayment(0.0);
+            water.setWbefore(water.getWnow());
+            water.setWnow(0.0);
+            waterService.updateById(water);
+            return ResponseResult.success();
+        }
+    }
+
+
+    //水费充值
+    @PutMapping("waterRecharge")
+    @Logs(model = "水费", operation = Operation.UPDATE)
+    public ResponseResult waterRecharge(@RequestBody Water water) {
+        Double payment = water.getPayment();
+        Double amount = water.getAmount();
+        water.setAmount(payment + amount);
+        waterService.updateById(water);
+        return ResponseResult.success().message("充值成功");
+    }
+
+    @PostMapping("waterNowAdd")
+    public ResponseResult waterNowAdd(@RequestBody Water water){
+        Water one = waterService.getById(water.getId());
+        if (one.getWbefore() > water.getWnow()){
+            return ResponseResult.fail().message("抄表数值有误");
+        }
         waterService.updateById(water);
         return ResponseResult.success();
     }
 
-
     //更具id进行查询信息
     @GetMapping("waterID/{id}")
-    public ResponseResult waterID(@PathVariable Integer id){
+    public ResponseResult waterID(@PathVariable Integer id) {
         Water waterbyId = waterService.getById(id);
         return ResponseResult.success().data(waterbyId);
     }

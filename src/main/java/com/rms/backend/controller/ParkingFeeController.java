@@ -58,8 +58,8 @@ public class ParkingFeeController {
         ParkingFeeForm parkingFeeForm = new ParkingFeeForm();
         BeanUtils.copyProperties(parkingFree,parkingFeeForm);
 //        获取用户账户
-        String username = ownerService.getById(parkingFree.getOid()).getUsername();
-        parkingFeeForm.setAccount(username);
+        String tel = ownerService.getById(parkingFree.getOid()).getTel();
+        parkingFeeForm.setTel(tel);
 //        获取车位号
         String nos = drivewayService.getById(parkingFree.getDid()).getNos();
         parkingFeeForm.setNos(nos);

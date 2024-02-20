@@ -13,4 +13,5 @@ import lombok.Data;
 @Data
 public class EleFrom extends Electricity {
     private String numbering;
+    private String ename;
 }

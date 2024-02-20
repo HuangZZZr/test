@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class ParkingFeeForm extends ParkingFree {
-    private String account;
+    private String tel;
     private String nos;
 }

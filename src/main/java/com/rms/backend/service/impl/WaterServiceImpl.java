@@ -46,7 +46,7 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water>
         List<Map>waterdatas=datas.stream().map(data->{
 
             HashMap<String, Object> waterHashMap = new HashMap<>();
-            Double balance = data.getBalance();
+            Double balance = data.getAmount();
             String numbering = houseMapper.selectById(data.getHid()).getNumbering();
             waterHashMap.put("numbering",numbering);
             waterHashMap.put("balance",balance);
@@ -72,8 +72,11 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water>
             WaterFrom waterFrom = new WaterFrom();
             BeanUtils.copyProperties(water,waterFrom);
             Integer hid = water.getHid();
+            Integer oid = water.getOid();
+            Owner owner = ownerMapper.selectById(oid);
             House house = houseMapper.selectById(hid);
             waterFrom.setNumbering(house.getNumbering());
+            waterFrom.setWname(owner.getName());
             return waterFrom;
         }).collect(Collectors.toList());
 

@@ -66,17 +66,67 @@ public class ElectricityController {
 
     }
 
-    //修改电费
+//    //修改电费
+//    @PutMapping("eleUpData")
+//    @RequiresPermissions("rms:ele:update")
+//    @Logs(model = "电费",operation = Operation.UPDATE)
+//    public ResponseResult eleUpData(@RequestBody Electricity electricity){
+//        Double amount = electricity.getAmount();
+//        Double balance = electricity.getBalance();
+//        electricity.setBalance(amount+balance);
+//        electricityService.saveOrUpdate(electricity);
+//        return ResponseResult.success();
+//
+//    }
+
+    //电费结算
     @PutMapping("eleUpData")
-    @RequiresPermissions("rms:ele:update")
     @Logs(model = "电费",operation = Operation.UPDATE)
+    public ResponseResult waterUpData(@RequestBody Electricity electricity){
+        //计算余额
+        Double ebefore = electricity.getEbefore();
+        Double enow = electricity.getEnow();
+        Double data=enow-ebefore;
+        double w=0;
+        if (data>100){
+            w=(data-100)*4+50*3+50*2;
+        } else if (data>50&&data<100) {
+            w=(data-50)*3+50*2;
+        }else {
+            w=data*2;
+        }
+        Double amount = electricity.getAmount()-w;
+        if (amount<0){
+            return ResponseResult.success().message("电费余额不足，请及时缴纳");
+        }else {
+            electricity.setAmount(amount);
+            electricity.setPayment(0.0);
+            electricity.setEbefore(electricity.getEnow());
+            electricity.setEnow(0.0);
+            electricityService.updateById(electricity);
+            return ResponseResult.success();}
+    }
+
+    //电费充值
+    @PutMapping("eleRecharge")
+    @Logs(model = "电费充值",operation = Operation.UPDATE)
     public ResponseResult eleUpData(@RequestBody Electricity electricity){
         Double amount = electricity.getAmount();
-        Double balance = electricity.getBalance();
-        electricity.setBalance(amount+balance);
+        Double balance = electricity.getPayment();
+        electricity.setAmount(amount+balance);
         electricityService.saveOrUpdate(electricity);
-        return ResponseResult.success();
+        return ResponseResult.success().message("充值成功");
 
+    }
+
+    @PostMapping("eleNowAdd")
+    public ResponseResult waterNowAdd(@RequestBody Electricity electricity){
+        Electricity one = electricityService.getById(electricity.getId());
+        if (one.getEbefore() > electricity.getEnow()){
+            return ResponseResult.fail().message("抄表数值有误");
+        }
+        electricityService.updateById(electricity);
+        return ResponseResult.success();
     }
 
     //更具ID查看
