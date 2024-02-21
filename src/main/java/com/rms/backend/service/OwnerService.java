@@ -18,7 +18,7 @@ public interface OwnerService extends IService<Owner> {
 
     ResponseResult ownerList(QueryCondition<Owner> queryCondition);
 
-    ResponseResult saveOwner(OwnerVO ownerVO);
+    ResponseResult saveOwner(OwnerForm ownerForm);
 
     ResponseResult removeById(Integer id);
 }

@@ -79,9 +79,9 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
     }
 
     @Override
-    public ResponseResult saveOwner(OwnerVO ownerVO) {
+    public ResponseResult saveOwner(OwnerForm ownerForm) {
         Owner owner = new Owner();
-        BeanUtils.copyProperties(ownerVO,owner);
+        BeanUtils.copyProperties(ownerForm,owner);
 
         String account = owner.getUsername();
         LambdaQueryWrapper<Owner> lambda = new QueryWrapper<Owner>().lambda();
@@ -104,7 +104,8 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         baseMapper.insert(owner);
 
 //        添加房屋关联
-        Integer hid = houseMapper.selectOne(new QueryWrapper<House>().lambda().eq(House::getNumbering, ownerVO.getNumbering())).getId();
+        List<Integer> hids = ownerForm.getNumbering();
+        for (Integer hid : hids) {
         OwnerHouse ownerHouse = new OwnerHouse();
         ownerHouse.setHid(hid);
         ownerHouse.setOid(owner.getId());
@@ -121,6 +122,8 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         water.setHid(hid);
         water.setPaymentTime(new Date());
         water.setUpdateTime(new Date());
+        water.setWbefore(0.00);
+        water.setWnow(0.00);
         water.setAmount(0.00);
         water.setPayment(0.00);
         waterMapper.insert(water);
@@ -131,6 +134,8 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         electricity.setHid(hid);
         electricity.setPaymentTime(new Date());
         electricity.setUpdateTime(new Date());
+        electricity.setEbefore(0.00);
+        electricity.setEnow(0.00);
         electricity.setPayment(0.00);
         electricity.setAmount(0.00);
         electricityMapper.insert(electricity);
@@ -141,6 +146,7 @@ public class OwnerServiceImpl extends ServiceImpl<OwnerMapper, Owner> implements
         ownerRole.setRid(3);
         ownerRoleMapper.insert(ownerRole);
 
+        }
         return ResponseResult.success().message("添加成功");
     }
 

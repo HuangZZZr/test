@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class OwnerForm extends Owner {
 
-    private List<Integer> rids;
+    private List<Integer> numbering;
 }

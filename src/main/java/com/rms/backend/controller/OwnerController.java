@@ -45,8 +45,8 @@ public class OwnerController {
     @PostMapping("save")
     @RequiresPermissions("rms:owner:add")
     @Logs(model = "业主",operation = Operation.ADD)
-    public ResponseResult addOwner(@RequestBody OwnerVO ownerVO){
-        return ownerService.saveOwner(ownerVO);
+    public ResponseResult addOwner(@RequestBody OwnerForm ownerForm){
+        return ownerService.saveOwner(ownerForm);
     }
     //3、修改业主信息
     @PutMapping("update")
