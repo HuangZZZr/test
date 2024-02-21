@@ -59,8 +59,11 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             Integer newOid = repair.getOid();
             BeanUtils.copyProperties(repair, repairForm);
             Owner owner = ownerMapper.selectById(newOid);
-            repairForm.setAccount(owner.getUsername());
-
+            if (ObjectUtils.isEmpty(owner)){
+                repairForm.setAccount("用户已搬离");
+            }else {
+                repairForm.setAccount(owner.getUsername());
+            }
             return repairForm;
         }).collect(Collectors.toList());
 
@@ -80,7 +83,11 @@ public class RepairServiceImpl extends ServiceImpl<RepairMapper, Repair> impleme
             BeanUtils.copyProperties(data,repairForm);
             Integer oid = data.getOid();
             Owner owner = ownerMapper.selectById(oid);
-            repairForm.setAccount( owner.getUsername());
+            if (ObjectUtils.isEmpty(owner)){
+                repairForm.setAccount("用户已搬离");
+            }else {
+                repairForm.setAccount( owner.getUsername());
+            }
             return repairForm;
         }).collect(Collectors.toList());
         return ResponseResult.success().data(repairFroms);

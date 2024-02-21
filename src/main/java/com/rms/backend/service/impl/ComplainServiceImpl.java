@@ -46,7 +46,11 @@ public class ComplainServiceImpl extends ServiceImpl<ComplainMapper, Complain> i
             Integer oid = complain.getOid();
             BeanUtils.copyProperties(complain, complainForm);
             Owner owner = ownerMapper.selectById(oid);
-            complainForm.setAccount(owner.getName());
+            if (ObjectUtils.isEmpty(owner)){
+                complainForm.setAccount("用户已搬离");
+            }else {
+                complainForm.setAccount(owner.getName());
+            }
             return complainForm;
         }).collect(Collectors.toList());
 
