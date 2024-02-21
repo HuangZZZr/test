@@ -68,11 +68,9 @@ public class CustomerRealm extends AuthorizingRealm {
         //获取对象的请求
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
-        String uri = request.getRequestURI();
         String token = request.getHeader("token");
         Map<String, Object> claims = jwtUtil.getClaims(token);
         String account = (String) claims.get("account");
-        System.out.println("account = " + account);
 
 //        根据账户去俩个表查询
         Owner owner = ownerMapper.selectOne(new QueryWrapper<Owner>().lambda().eq(Owner::getUsername, account));
