@@ -83,6 +83,4 @@ public class RoleController {
         List<Role> list = roleService.list();
         return ResponseResult.success().data(list);
     }
-
-
 }

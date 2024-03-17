@@ -193,7 +193,7 @@ public class PropertyController {
         return ResponseResult.success().message("安全退出");
     }
 
-    @GetMapping("permissions")
+      @GetMapping("permissions")
     public ResponseResult getPermissions(HttpServletRequest request){
         return propertyService.getPermissions(request);
     }

@@ -7,15 +7,13 @@ server:
 spring:
   redis:
     database: 0
-    host: 192.168.180.130
-#    host: redis01
-    port: 6379
+    host: 192.168.91.128
+    port: 6380
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
-#    url: jdbc:mysql://mysqldb/rms?serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    password: huang
     url: jdbc:mysql:///rms?serverTimezone=GMT%2B8&useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
   jackson:
     default-property-inclusion: non_null
@@ -28,11 +26,15 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
-
 logging:
   level:
     root: info
     com.rms.backend: debug
+alipay:
+   appId: 9021000134651277
+   appPrivateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDSHELdwfuD60qDPUnb+YkwP7dXidEAyxiBuiMzIF/3QSMsVg8KqhtfjZHkSzvGf8H8JRdzhdDKRdW599M0EhKDqioV77or+y8EQnRynEKrsWbL5JqMZ/yo5xjjok4oyFngIxOUR2pufUiekW2JEWExaGSsf3EI43XOKMvZCjGACz/c8e0rEnQVVSYq6gRHuGFL9C0YWc4sg7KWvX2L4Y+LuDNUOhED37eYs0uY0PIUMn8aBvL34X8JP4rqtuLEDJU1Bb3rhvmG8jQkYwwHtIsB8joRveLF3KKf9wYkvo67YOpxnzZrWFGygxVW+O7iqs7j/cToJQY4tjHJPkDHibC1AgMBAAECggEAP+yPP268OfeFFQa5iO6TmZVZD44Dg41G6HkcKnroF46+x8drDiCQ8XJd96oYBp1qBG+4gdItosy6aLkIjegNr/c+lKv55VWniVE6on/+HMR9dP0ZNCyTB0RAI0mHJAtIpNOnKk7MB8+gH3Y5cCFUg7ayInUni7/AYLeyxVa/lqfISRxVukaHNX4a97GjkUnNHwBv3HC9BUrlzD1tVRQVCYLqNvX4dKP5xLPCv+lUBBebKvQkPvWHy+qmcA++Jt+SQKdeoB39BRb9qYJr6oX5S8eK3Un7/54MCFvHnVYSNmJTLiqzq8B3apxo/DCRx/k1qCG6bHsDW6vAg+b+kXvXpQKBgQDxsSgkmdSoJTzhlkKNUFcVXOiYlcGekxa3i3cR7MAImSUbzm/Ksd16LwRicOxBWesp8/UG78Dn/3apluQHbh7l5nJv5m3jxhPbHnDovVh7/NNSTRR7mpVPWmTcKpyRLcf+FJ4BBTq8Pples8AVch/H2WfvSzEmlc6SY97MGvjC9wKBgQDejHwbzwHeu/AnBwsUlK5DGlt+KKK4kSvSHGzhEVfCHZlmQQIlNpDgsUsUm5YDTcELZLVSy4rMdMsYyJFcioIkctNAxsgbTIUbHoTYcFoilw18t6uiIa/q5aOgJa/u4owTru7TMvz+8DYI2hOhB7y0+12ugJkg45ZIv7p0JDwSswKBgQDr2MQjczlhG3VdbRNkcpGH9zHCM+DMrRvt39pBU5XQziC4EaplUUuef2L37Nmeq/Ae8ECalDraKR/SPbwmw/7CuS3SpDl3m0Kk//+OHbbKxtwv46epNh+dX8gsUCiYQuR1vAizVjcKmstu7ljylHsOucgCao176ZO6plozMd6t4QKBgDMC5JfDNVyGm592f9Wx1tfOvNYIHnRL4k2A8nwMa581BapokENTZJX8TYdlulb7hZpE9UMLIL+Irdz6bEdYAEi2gTHB3rBTM9dpgW3TIvX2xcKmnxLEwfwHsx/MQ61wBEemu1txvof5K4mP4xvwGBMr4udS1saxJAt81xI0FAj9AoGBAJh8PuDR/jQkivlZLV9UyWxxxKftOVPvUq78/U+6rU+7oPsv7eySuOpELU9jze3Mi9bZOOA+20kvz79BVX1rqy3D6J6sHgrTrY3mAzIMpG+bsEetS5Oz/NA23Cu28Sz8mpzIlRPzCs5Dvcdw5+tULZOR4GGyr82WbdpNz6IHnioB
+   alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgMrUyY728px2tPxc97Vn9CUw7wKkjSGZvKT3Tbt98QgzY4Tr4WhrXeJyImV9DfswqvhdqhWioR2cndQ12gIERoYU+tfD+En8X9neraD2YUKcfiQwPO5TfTBkugrT7d+zRJUuoZDVWO9WEfOvZg08wCuzS0rm73cK5MU1WlQPbk5sQtDGTpOT8ZWCWOlsTScP5hlBjv4ozHMuYR1rklr9yoOSrzaQRsSj6tdeO41TA82//VvHOYNyZ7vtSqkwMRVLuDjEON6kN/tuR3sfcLjoiQ7j4R1QUXydaJP4AGhZDQcU9LqwbYtk0dhsz+0Jzaq8mJ+eXrVzO1l7XggR9g4OKwIDAQAB
+   notifyUrl: http://xmw6au.natappfree.cc/rms/alipay/notify
 
 secret: rms001
 time: 7

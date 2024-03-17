@@ -103,7 +103,6 @@ public class CustomerRealm extends AuthorizingRealm {
                     .stream().filter(permission -> permission.getIsMenu() == 2)
                     .map(permission -> permission.getPermission()).collect(Collectors.toList());
         }
-
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addStringPermissions(permissions);
         return simpleAuthorizationInfo;

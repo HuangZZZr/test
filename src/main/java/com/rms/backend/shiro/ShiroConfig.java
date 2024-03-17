@@ -30,9 +30,11 @@ public class ShiroConfig {
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         map.put("/captcha","anon");
         map.put("/property/login","anon");
+        map.put("/alipay/pay","anon");
+        map.put("/alipay/test","anon");
+        map.put("/alipay/notify","anon");
         map.put("/**","kgc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
-
         return shiroFilterFactoryBean;
     }
     @Bean
